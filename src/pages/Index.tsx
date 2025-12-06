@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { SparklesCore } from "@/components/SparklesCore";
 import { RetroGrid } from "@/components/ui/retro-grid";
+import GradualBlur from "@/components/GradualBlur";
 import {
   Trophy,
   Target,
@@ -50,6 +51,13 @@ const Index = () => {
     null
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const timelineRef = useRef<HTMLDivElement>(null);
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   // Helper function to extract max participants and fee
   const getCompetitionDetails = (competition: any) => {
@@ -145,6 +153,30 @@ const Index = () => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // Countdown timer for registration deadline (Jan 10, 2026)
+  useEffect(() => {
+    const updateCountdown = () => {
+      const registrationDeadline = new Date("2026-01-10T23:59:59").getTime();
+      const now = new Date().getTime();
+      const difference = registrationDeadline - now;
+
+      if (difference > 0) {
+        setCountdown({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+          minutes: Math.floor((difference / 1000 / 60) % 60),
+          seconds: Math.floor((difference / 1000) % 60),
+        });
+      } else {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const competitions = [
     {
@@ -294,7 +326,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-sm pt-32">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-black to-slate-950 text-sm pt-32">
       {/* Navbar */}
       <motion.nav
         initial={{ y: -100 }}
@@ -356,11 +388,11 @@ const Index = () => {
           <SparklesCore
             background="#000000"
             minSize={0.8}
-            maxSize={3.5}
-            particleDensity={200}
+            maxSize={2.5}
+            particleDensity={80}
             className="w-full h-full"
             particleColor="#ffffff"
-            speed={2}
+            speed={1}
           />
         </div>
 
@@ -375,11 +407,21 @@ const Index = () => {
             >
               {/* Main Heading with letter animation */}
               <div className="space-y-4 mb-8">
+                {/* Glowing badge */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.6 }}
+                  className="inline-block mb-4 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-400/50 backdrop-blur-sm"
+                >
+                  <span className="text-cyan-400 font-semibold text-sm">🚀 TECHNOCRATZ 2.0 - LIVE EVENT</span>
+                </motion.div>
+
                 <motion.h1
                   initial="hidden"
                   animate="visible"
                   transition={{ delayChildren: 0.25 }}
-                  className="text-5xl lg:text-7xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent"
+                  className="text-5xl lg:text-8xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg"
                 >
                   {"TECHNOCRATZ 2.0".split("").map((char, i) => (
                     <motion.span
@@ -448,17 +490,17 @@ const Index = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-4 rounded-lg hover:bg-blue-500/10 transition-colors border border-blue-500/20"
+                  className="text-center p-6 rounded-xl hover:bg-blue-500/10 transition-all duration-300 border border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 shadow-lg shadow-blue-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="text-3xl font-bold text-cyan-400 mb-2"
+                    className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2"
                   >
                     6
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider">
+                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Competitions
                   </div>
                 </motion.div>
@@ -467,17 +509,17 @@ const Index = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-4 rounded-lg hover:bg-blue-500/10 transition-colors border border-blue-500/20"
+                  className="text-center p-6 rounded-xl hover:bg-purple-500/10 transition-all duration-300 border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 shadow-lg shadow-purple-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9 }}
-                    className="text-3xl font-bold text-blue-400 mb-2"
+                    className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2"
                   >
                     500+
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider">
+                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Participants
                   </div>
                 </motion.div>
@@ -486,17 +528,17 @@ const Index = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.9 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-4 rounded-lg hover:bg-blue-500/10 transition-colors border border-blue-500/20"
+                  className="text-center p-6 rounded-xl hover:bg-green-500/10 transition-all duration-300 border border-green-500/30 bg-gradient-to-br from-green-500/5 to-emerald-500/5 shadow-lg shadow-green-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.0 }}
-                    className="text-3xl font-bold text-cyan-400 mb-2"
+                    className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2"
                   >
                     ₹50K+
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider">
+                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Prizes
                   </div>
                 </motion.div>
@@ -507,7 +549,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
-                className="flex flex-col sm:flex-row gap-4 justify-center"
+                className="flex flex-col sm:flex-row gap-6 justify-center mt-8"
               >
                 <motion.div
                   whileHover={{ scale: 1.05, y: -3 }}
@@ -515,7 +557,7 @@ const Index = () => {
                 >
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-blue-500 to-cyan-400 text-white text-lg px-10 py-5 group ring-1 ring-blue-400/30 hover:scale-105 rounded-lg font-semibold"
+                    className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-400 text-white text-lg px-12 py-6 group ring-2 ring-cyan-400/50 hover:ring-cyan-300 rounded-xl font-bold shadow-lg shadow-cyan-500/50 transition-all duration-300"
                   >
                     <a
                       href="#register"
@@ -529,7 +571,7 @@ const Index = () => {
                           repeatDelay: 3,
                         }}
                       >
-                        <Zap className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                        <Zap className="w-6 h-6 mr-3 group-hover:animate-pulse" />
                       </motion.div>
                       Register Now
                     </a>
@@ -542,14 +584,13 @@ const Index = () => {
                 >
                   <Button
                     asChild
-                    variant="outline"
-                    className="border-2 border-blue-400 text-blue-300 text-lg px-10 py-5 group ring-1 ring-blue-400/30 hover:scale-105 rounded-lg font-semibold hover:bg-blue-400/10"
+                    className="border-2 border-purple-400 text-purple-300 text-lg px-12 py-6 group ring-2 ring-purple-400/50 hover:ring-purple-300 rounded-xl font-bold bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300 shadow-lg shadow-purple-500/30"
                   >
                     <a
                       href="#competitions"
                       className="flex items-center justify-center"
                     >
-                      <Trophy className="w-5 h-5 mr-2 group-hover:text-primary transition-colors group-hover:animate-bounce" />
+                      <Trophy className="w-6 h-6 mr-3 group-hover:text-purple-200 transition-colors group-hover:animate-bounce" />
                       Explore Events
                     </a>
                   </Button>
@@ -561,15 +602,29 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.8 }}
-                className="mt-12 text-muted-foreground"
+                className="mt-12"
               >
-                <p className="text-lg">
-                  📅 17th January 2026 | Agnel Polytechnic, Vashi
-                </p>
+                <div className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-400/50 backdrop-blur-sm">
+                  <p className="text-lg font-semibold text-transparent bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text">
+                    📅 17th January 2026 | 📍 Agnel Polytechnic, Vashi
+                  </p>
+                </div>
               </motion.div>
             </motion.div>
           </div>
         </div>
+
+        {/* Gradual Blur Effect */}
+        <GradualBlur
+          target="parent"
+          position="bottom"
+          height="6rem"
+          strength={2}
+          divCount={5}
+          curve="bezier"
+          exponential={true}
+          opacity={1}
+        />
       </section>
       {/* About Section */}
       <section id="about" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
@@ -683,8 +738,17 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/50 backdrop-blur-sm"
+            >
+              <span className="text-purple-400 font-semibold text-sm">⚡ TECHNICAL CHALLENGES</span>
+            </motion.div>
+            
             <motion.h2
-              className="text-5xl md:text-6xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent"
+              className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -730,83 +794,482 @@ const Index = () => {
                   setIsModalOpen(true);
                 }}
                 variants={{
-                  hidden: { opacity: 0, y: 30, scale: 0.9 },
-                  visible: { opacity: 1, y: 0, scale: 1 },
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0 },
                 }}
                 transition={{
-                  duration: 0.6,
-                  delay: index * 0.1,
-                  type: "spring",
-                  stiffness: 100,
+                  duration: 0.4,
+                  delay: index * 0.05,
                 }}
                 whileHover={{
-                  y: -12,
-                  scale: 1.05,
-                  transition: { duration: 0.3 },
+                  y: -8,
+                  transition: { duration: 0.2 },
                 }}
                 viewport={{ once: true }}
                 className="group cursor-pointer"
               >
-                <div className="relative h-full bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-blue-500/30 rounded-xl p-6 hover:border-cyan-400/50 transition-all duration-300 backdrop-blur-sm overflow-hidden">
+                <div className="relative h-full bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-blue-500/40 rounded-2xl p-8 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-md overflow-hidden shadow-xl shadow-blue-500/10 hover:shadow-cyan-500/20">
                   {/* Animated background gradient on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:via-cyan-500/10 group-hover:to-blue-500/10 transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/15 group-hover:via-cyan-500/15 group-hover:to-blue-500/15 transition-all duration-500" />
+                  
+                  {/* Glow effect on hover */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-300 -z-10" />
                   
                   <div className="relative z-10">
                     <motion.div
-                      className="mb-4"
-                      whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.2 }}
-                      transition={{ duration: 0.5 }}
+                      className="mb-6 inline-block p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20"
+                      whileHover={{ scale: 1.1 }}
+                      transition={{ duration: 0.2 }}
                     >
-                      <competition.icon className="w-14 h-14 text-cyan-400 group-hover:text-blue-300 transition-colors duration-300" />
+                      <competition.icon className="w-12 h-12 text-cyan-400 group-hover:text-blue-300 transition-colors duration-300" />
                     </motion.div>
                     
-                    <motion.h3
-                      className="text-xl font-bold mb-3 text-white group-hover:text-cyan-300 transition-colors duration-300"
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 + 0.2, duration: 0.5 }}
-                    >
-                      {competition.title.split("").map((char, i) => (
-                        <motion.span
-                          key={i}
-                          initial={{ opacity: 0, y: 10 }}
-                          whileInView={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 + i * 0.02, duration: 0.3 }}
-                          className="inline-block"
-                        >
-                          {char}
-                        </motion.span>
-                      ))}
-                    </motion.h3>
+                    <h3 className="text-xl font-bold mb-3 text-white group-hover:text-cyan-300 transition-colors duration-300">
+                      {competition.title}
+                    </h3>
                     
-                    <motion.p
-                      className="text-gray-300 mb-6 leading-relaxed text-sm"
-                      initial={{ opacity: 0 }}
-                      whileInView={{ opacity: 1 }}
-                      transition={{ delay: index * 0.1 + 0.3, duration: 0.5 }}
-                    >
+                    <p className="text-sm text-gray-300 mb-4 leading-relaxed">
                       {competition.description}
-                    </motion.p>
+                    </p>
                     
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
+                      className="mt-6"
                     >
                       <Button
-                        className="w-full bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold hover:from-blue-600 hover:to-cyan-500 transition-all duration-300 group-hover:shadow-lg group-hover:shadow-cyan-500/50"
+                        className="w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-400 text-white font-bold py-3 rounded-lg hover:from-blue-700 hover:via-cyan-600 hover:to-blue-500 transition-all duration-300 shadow-lg shadow-cyan-500/30 group-hover:shadow-cyan-500/60 border border-cyan-400/50"
                         onClick={(e: any) => {
                           e.stopPropagation();
                           setSelectedCompetition(competition);
                           setIsModalOpen(true);
                         }}
                       >
-                        View Details
+                        View Details →
                       </Button>
                     </motion.div>
                   </div>
                 </div>
               </motion.div>
             ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section id="timeline" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 -z-10 opacity-15">
+          <SparklesCore
+            background="transparent"
+            minSize={0.5}
+            maxSize={1.5}
+            particleDensity={30}
+            className="w-full h-full"
+            particleColor="#ffffff"
+            speed={0.6}
+          />
+        </div>
+
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-20"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/50 backdrop-blur-sm"
+            >
+              <span className="text-green-400 font-semibold text-sm">📅 EVENT TIMELINE</span>
+            </motion.div>
+            
+            <motion.h2
+              className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-green-400 via-emerald-300 to-green-300 bg-clip-text text-transparent drop-shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Event Schedule
+            </motion.h2>
+            
+            <motion.p
+              className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Follow the journey of TechnoCratz 2.0 from launch to celebration
+            </motion.p>
+          </motion.div>
+
+          {/* Timeline Container */}
+          <div ref={timelineRef} className="relative max-w-5xl mx-auto px-4">
+            {/* Vertical Line */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-green-500 via-emerald-500 to-green-500 rounded-full top-0" />
+
+            {/* Timeline Events */}
+            <div className="space-y-20">
+              {/* Event 1 - Launch Date */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-2 gap-8 items-center relative"
+              >
+                {/* Left Content - Date */}
+                <div className="text-right">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-400/50 backdrop-blur-sm inline-block"
+                  >
+                    <p className="text-2xl font-bold text-green-400">Dec 15</p>
+                    <p className="text-sm text-gray-400">2025</p>
+                  </motion.div>
+                </div>
+
+                {/* Center Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                  <motion.div
+                    whileHover={{ scale: 1.3 }}
+                    className="w-5 h-5 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full border-4 border-slate-950 shadow-lg shadow-green-500/50 cursor-pointer"
+                  />
+                </div>
+
+                {/* Right Content - Details */}
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-green-500/40 backdrop-blur-md shadow-lg shadow-green-500/10 hover:shadow-green-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-bold text-green-400 mb-2">🚀 Launch Date</h3>
+                    <p className="text-gray-300 text-sm">Registration portal opens. Get ready to showcase your skills!</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Event 2 - Registration Deadline */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-2 gap-8 items-center relative"
+              >
+                {/* Left Content - Details */}
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-blue-500/40 backdrop-blur-md shadow-lg shadow-blue-500/10 hover:shadow-blue-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-bold text-blue-400 mb-2">📝 Registration Deadline</h3>
+                    <p className="text-gray-300 text-sm">Last chance to register! Secure your spot in the competition.</p>
+                  </motion.div>
+                </div>
+
+                {/* Center Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                  <motion.div
+                    whileHover={{ scale: 1.3 }}
+                    className="w-5 h-5 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full border-4 border-slate-950 shadow-lg shadow-blue-500/50 cursor-pointer"
+                  />
+                </div>
+
+                {/* Right Content - Date */}
+                <div className="text-left">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/50 backdrop-blur-sm inline-block"
+                  >
+                    <p className="text-2xl font-bold text-blue-400">Jan 10</p>
+                    <p className="text-sm text-gray-400">2026</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Event 3 - Competition Day 1 */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-2 gap-8 items-center relative"
+              >
+                {/* Left Content - Date */}
+                <div className="text-right">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/50 backdrop-blur-sm inline-block"
+                  >
+                    <p className="text-2xl font-bold text-purple-400">Jan 17</p>
+                    <p className="text-sm text-gray-400">2026</p>
+                  </motion.div>
+                </div>
+
+                {/* Center Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                  <motion.div
+                    whileHover={{ scale: 1.3 }}
+                    className="w-5 h-5 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full border-4 border-slate-950 shadow-lg shadow-purple-500/50 cursor-pointer"
+                  />
+                </div>
+
+                {/* Right Content - Details */}
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-purple-500/40 backdrop-blur-md shadow-lg shadow-purple-500/10 hover:shadow-purple-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-bold text-purple-400 mb-2">⚡ Competition Day 1</h3>
+                    <p className="text-gray-300 text-sm">Preliminary rounds begin. Showcase your technical prowess!</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Event 4 - Competition Day 2 */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-2 gap-8 items-center relative"
+              >
+                {/* Left Content - Details */}
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-orange-500/40 backdrop-blur-md shadow-lg shadow-orange-500/10 hover:shadow-orange-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-bold text-orange-400 mb-2">🔥 Competition Day 2</h3>
+                    <p className="text-gray-300 text-sm">Finals and intense battles. Who will be crowned champion?</p>
+                  </motion.div>
+                </div>
+
+                {/* Center Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                  <motion.div
+                    whileHover={{ scale: 1.3 }}
+                    className="w-5 h-5 bg-gradient-to-r from-orange-400 to-yellow-400 rounded-full border-4 border-slate-950 shadow-lg shadow-orange-500/50 cursor-pointer"
+                  />
+                </div>
+
+                {/* Right Content - Date */}
+                <div className="text-left">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-4 rounded-lg bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border border-orange-400/50 backdrop-blur-sm inline-block"
+                  >
+                    <p className="text-2xl font-bold text-orange-400">Jan 18</p>
+                    <p className="text-sm text-gray-400">2026</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+
+              {/* Event 5 - Prize Distribution */}
+              <motion.div
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4 }}
+                viewport={{ once: true }}
+                className="grid grid-cols-2 gap-8 items-center relative"
+              >
+                {/* Left Content - Date */}
+                <div className="text-right">
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="p-4 rounded-lg bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-400/50 backdrop-blur-sm inline-block"
+                  >
+                    <p className="text-2xl font-bold text-yellow-400">Jan 18</p>
+                    <p className="text-sm text-gray-400">Evening</p>
+                  </motion.div>
+                </div>
+
+                {/* Center Dot */}
+                <div className="absolute left-1/2 transform -translate-x-1/2 z-10">
+                  <motion.div
+                    whileHover={{ scale: 1.3 }}
+                    className="w-5 h-5 bg-gradient-to-r from-yellow-400 to-amber-400 rounded-full border-4 border-slate-950 shadow-lg shadow-yellow-500/50 cursor-pointer"
+                  />
+                </div>
+
+                {/* Right Content - Details */}
+                <div>
+                  <motion.div
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-yellow-500/40 backdrop-blur-md shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/30 transition-all duration-300"
+                  >
+                    <h3 className="text-xl font-bold text-yellow-400 mb-2">🏆 Prize Distribution</h3>
+                    <p className="text-gray-300 text-sm">Celebrate the winners! Recognition and rewards await the champions.</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Countdown Section */}
+      <section id="countdown" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+        {/* Background Effects */}
+        <div className="absolute inset-0 -z-10 opacity-15">
+          <SparklesCore
+            background="transparent"
+            minSize={0.5}
+            maxSize={1.5}
+            particleDensity={25}
+            className="w-full h-full"
+            particleColor="#ffffff"
+            speed={0.5}
+          />
+        </div>
+
+        <div className="container mx-auto px-4">
+          {/* Section Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6 }}
+              className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-400/50 backdrop-blur-sm"
+            >
+              <span className="text-red-400 font-semibold text-sm">⏰ REGISTRATION CLOSING IN</span>
+            </motion.div>
+
+            <motion.h2
+              className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-red-400 via-pink-300 to-red-300 bg-clip-text text-transparent drop-shadow-lg"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              Registration Deadline
+            </motion.h2>
+
+            <motion.p
+              className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Don't miss your chance to compete! Secure your spot before the deadline.
+            </motion.p>
+          </motion.div>
+
+          {/* Countdown Timer */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              {/* Days */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-red-600 via-pink-500 to-red-600 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-opacity duration-300" />
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-red-500/40 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-xl shadow-red-500/10 group-hover:shadow-red-500/30 transition-all duration-300">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-red-400 to-pink-400 bg-clip-text text-transparent mb-2"
+                  >
+                    {String(countdown.days).padStart(2, "0")}
+                  </motion.div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Days</div>
+                </div>
+              </motion.div>
+
+              {/* Hours */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-600 via-red-500 to-orange-600 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-opacity duration-300" />
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-orange-500/40 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-xl shadow-orange-500/10 group-hover:shadow-orange-500/30 transition-all duration-300">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 }}
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent mb-2"
+                  >
+                    {String(countdown.hours).padStart(2, "0")}
+                  </motion.div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Hours</div>
+                </div>
+              </motion.div>
+
+              {/* Minutes */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-600 via-orange-500 to-yellow-600 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-opacity duration-300" />
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-yellow-500/40 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-xl shadow-yellow-500/10 group-hover:shadow-yellow-500/30 transition-all duration-300">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent mb-2"
+                  >
+                    {String(countdown.minutes).padStart(2, "0")}
+                  </motion.div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Minutes</div>
+                </div>
+              </motion.div>
+
+              {/* Seconds */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                className="relative group"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 via-blue-500 to-cyan-600 rounded-2xl opacity-0 group-hover:opacity-30 blur transition-opacity duration-300" />
+                <div className="relative bg-gradient-to-br from-slate-800/80 to-slate-900/80 border-2 border-cyan-500/40 rounded-2xl p-6 md:p-8 backdrop-blur-md shadow-xl shadow-cyan-500/10 group-hover:shadow-cyan-500/30 transition-all duration-300">
+                  <motion.div
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+                    className="text-4xl md:text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2"
+                  >
+                    {String(countdown.seconds).padStart(2, "0")}
+                  </motion.div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Seconds</div>
+                </div>
+              </motion.div>
+            </div>
+
+            {/* CTA Button */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="mt-12 text-center"
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -3 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  asChild
+                  className="bg-gradient-to-r from-red-600 via-pink-500 to-red-400 text-white text-lg px-12 py-6 group ring-2 ring-pink-400/50 hover:ring-pink-300 rounded-xl font-bold shadow-lg shadow-pink-500/50 transition-all duration-300"
+                >
+                  <a href="#register" className="flex items-center justify-center">
+                    <Zap className="w-6 h-6 mr-3 group-hover:animate-pulse" />
+                    Register Now Before It's Too Late!
+                  </a>
+                </Button>
+              </motion.div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -823,15 +1286,15 @@ const Index = () => {
       {/* About Us Section */}
       <section id="about-us" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
         {/* Sparkles Background */}
-        <div className="absolute inset-0 -z-10 opacity-40">
+        <div className="absolute inset-0 -z-10 opacity-20">
           <SparklesCore
             background="transparent"
             minSize={0.5}
-            maxSize={2}
-            particleDensity={80}
+            maxSize={1.5}
+            particleDensity={40}
             className="w-full h-full"
             particleColor="#ffffff"
-            speed={1.2}
+            speed={0.8}
           />
         </div>
         <div className="container mx-auto px-4">
