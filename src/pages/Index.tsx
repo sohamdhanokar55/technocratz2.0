@@ -987,7 +987,7 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-blue-400">Jan 10</p>
+                    <p className="text-2xl font-bold text-blue-400">Jan 5</p>
                     <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
