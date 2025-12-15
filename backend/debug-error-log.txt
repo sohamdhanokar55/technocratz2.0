@@ -1,0 +1,4 @@
+# Error Log - Razorpay API
+# This file is automatically updated by create_order2.php and verify_payment.php
+# Format: [timestamp] [script] error_message
+

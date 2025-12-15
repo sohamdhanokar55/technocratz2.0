@@ -77,42 +77,27 @@ const Index = () => {
     return { maxParticipants, fee };
   };
 
+  // Map competition titles to their registration routes
+  const getRegistrationRoute = (title: string): string => {
+    const routeMap: Record<string, string> = {
+      "TECHNICAL MIMIC": "/register/technical-mimic",
+      "AUTOCAD COMPETITION": "/register/autocad",
+      "BLIND TYPING": "/register/blind-typing",
+      "ROBONOVA – ROBO RACE": "/register/robo-race",
+      "HACK YOUR WAY": "/register/hack-your-way",
+      "BRIDGE BUILDING": "/register/bridge-building",
+    };
+    return routeMap[title] || "/register";
+  };
+
   const handleRegisterClick = (competition: any) => {
     try {
       if (!competition) {
         throw new Error("No competition selected");
       }
 
-      const { maxParticipants, fee } = getCompetitionDetails(competition);
-      
-      // Create a serializable version of competition (without icon function)
-      const competitionData = {
-        title: competition.title,
-        description: competition.description,
-        rules: competition.rules,
-        note: competition.note,
-        rounds: competition.rounds,
-        trackRules: competition.trackRules,
-      };
-
-      // Store in localStorage as backup
-      try {
-        localStorage.setItem("selectedCompetition", JSON.stringify({
-          competition: competitionData,
-          maxParticipants,
-          fee,
-        }));
-      } catch (storageError) {
-        console.warn("Failed to store in localStorage:", storageError);
-      }
-
-      navigate("/register", {
-        state: {
-          competition: competitionData,
-          maxParticipants,
-          fee,
-        },
-      });
+      const route = getRegistrationRoute(competition.title);
+      navigate(route);
     } catch (error) {
       console.error("Error in handleRegisterClick:", error);
       toast({

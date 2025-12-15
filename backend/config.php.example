@@ -1,0 +1,21 @@
+<?php
+/**
+ * Razorpay Configuration
+ * 
+ * IMPORTANT SECURITY NOTES:
+ * - Copy this file to config.php (do not commit config.php to version control)
+ * - Replace with your actual Razorpay credentials
+ * - Set proper file permissions (chmod 600) to prevent public read
+ * - NEVER expose key_secret in API responses or logs
+ * 
+ * To set up:
+ * 1. Copy this file: cp config.php.example config.php
+ * 2. Edit config.php and add your credentials
+ * 3. Set permissions: chmod 600 config.php
+ */
+
+return [
+    'key_id' => 'rzp_live_RkhwEzZeWjRVQf',  // Replace with your Razorpay Key ID
+    'key_secret' => 'YOUR_SECRET_KEY_HERE'  // Replace with your Razorpay Key Secret
+];
+?>
