@@ -1,185 +1,131 @@
-// src/hooks/useRazorpay.ts
-import { useCallback, useState } from 'react';
-import { loadRazorpayScript } from '@/lib/loadRzp';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { loadRazorpayScript } from "@/lib/loadRzp";
+import { toast } from "sonner";
 
-type StartPaymentArgs = {
+interface PaymentOptions {
   amountPaise: number;
-  event?: string;
-  registrationPayload?: any;
-  registrationId?: string;
-};
+  event: string;
+  registrationPayload: any;
+  registrationId: string;
+}
 
 interface PaymentResult {
   success: boolean;
-  response?: any;
   paymentRecord?: any;
-  error?: any;
+  error?: string;
 }
 
 export function useRazorpay() {
   const [loading, setLoading] = useState(false);
 
-  const startPayment = useCallback(async ({ amountPaise, event, registrationPayload, registrationId }: StartPaymentArgs): Promise<PaymentResult> => {
+  const startPayment = async (options: PaymentOptions): Promise<PaymentResult> => {
     setLoading(true);
+
     try {
-      // 1) Ensure the checkout script is loaded (preload ensures this is fast)
-      console.debug('[Razorpay] Loading checkout script...');
+      // Load Razorpay script
       await loadRazorpayScript();
-      console.debug('[Razorpay] Script loaded, window.Razorpay exists:', !!window.Razorpay);
 
-      // 2) Create order on server
-      console.debug('[Razorpay] Creating order with amount:', amountPaise);
-      const createRes = await fetch('https://apvcouncil.in/api/create_order2.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: amountPaise })
-      });
+      // Create Razorpay options
+      const razorpayOptions = {
+        key: "rzp_test_1DP5mmOlF5G1ag", // Test key - replace with production key in production
+        amount: options.amountPaise,
+        currency: "INR",
+        name: "Technocratz 2.0",
+        description: options.event,
+        order_id: "", // You'll need to create an order on your backend
+        handler: function (response: any) {
+          // Payment successful
+          const paymentRecord = {
+            payment_id: response.razorpay_payment_id,
+            order_id: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            amount: options.amountPaise,
+            currency: "INR",
+            status: "success",
+            created_at: new Date().toISOString(),
+            registration_id: options.registrationId,
+            event: options.event,
+          };
 
-      if (!createRes.ok) {
-        const text = await createRes.text();
-        console.error('[Razorpay] create_order2.php non-OK response', createRes.status, text);
-        throw new Error('Order creation failed (network)');
-      }
+          // Store payment record
+          const payments = JSON.parse(localStorage.getItem("technocratz_payments_v1") || "[]");
+          payments.push(paymentRecord);
+          localStorage.setItem("technocratz_payments_v1", JSON.stringify(payments));
 
-      const createJson = await createRes.json();
-      console.debug('[Razorpay] create_order2 response:', createJson);
-
-      if (!createJson.success && !createJson.order_id && !createJson.id) {
-        throw new Error(createJson.message || createJson.error || 'Order creation failed (invalid response)');
-      }
-
-      // 3) Normalize order_id (some backends return 'id', some 'order_id')
-      const orderId = createJson.order_id ?? createJson.id ?? createJson.order?.id;
-      const amountReturned = createJson.amount ?? createJson.order?.amount ?? amountPaise;
-
-      if (!orderId) {
-        console.error('[Razorpay] Missing order id from create order response', createJson);
-        throw new Error('Missing order id from server response');
-      }
-
-      console.debug('[Razorpay] Order created:', { orderId, amountReturned });
-
-      // 4) Build checkout options
-      const keyId = import.meta.env.VITE_RAZORPAY_KEY_ID || createJson.key;
-      if (!keyId) {
-        console.error('[Razorpay] Missing Razorpay key. Check .env VITE_RAZORPAY_KEY_ID');
-        throw new Error('Payment configuration missing');
-      }
-
-      // 5) Open checkout and wait for success/failure via Promise wrapper
-      console.debug('[Razorpay] Opening checkout...');
-      
-      // Capture variables for use in handler
-      const eventName = event;
-      const regPayload = registrationPayload;
-      const regId = registrationId;
-      
-      const paymentResult = await new Promise<PaymentResult>((resolve, reject) => {
-        const options: any = {
-          key: keyId,
-          amount: amountReturned,
-          currency: createJson.currency ?? 'INR',
-          name: 'APV Technocratz 2.0',
-          description: `Payment for ${eventName || 'Event Registration'}`,
-          order_id: orderId,
-          handler: async function (response: any) {
-            // Razorpay success - now verify on server
-            console.debug('[Razorpay] Payment success response', response);
-            
-            try {
-              // 6) Call verify_payment.php to verify signature and persist payment
-              console.debug('[Razorpay] Verifying payment on server...');
-              const verifyRes = await fetch('https://apvcouncil.in/api/verify_payment.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature,
-                  registrationId: regId,
-                  metadata: {
-                    event: eventName,
-                    registrationPayload: regPayload
-                  }
-                })
-              });
-
-              if (!verifyRes.ok) {
-                const text = await verifyRes.text();
-                console.error('[Razorpay] verify_payment.php non-OK response', verifyRes.status, text);
-                throw new Error('Payment verification failed (network)');
-              }
-
-              const verifyJson = await verifyRes.json();
-              console.debug('[Razorpay] verify_payment response:', verifyJson);
-
-              if (!verifyJson.success) {
-                throw new Error(verifyJson.error || 'Payment verification failed');
-              }
-
-              // Verification successful - resolve with payment record
-              resolve({ success: true, response, paymentRecord: verifyJson.paymentRecord });
-            } catch (verifyErr: any) {
-              console.error('[Razorpay] Verification error', verifyErr);
-              const errorMsg = verifyErr?.message ?? 'Payment verification failed';
-              toast.error('Payment Verification Failed', {
-                description: errorMsg + '. Please contact the organizer at 9321895202.',
-              });
-              resolve({ success: false, error: errorMsg });
-            }
+          return paymentRecord;
+        },
+        prefill: {
+          name: options.registrationPayload.leader?.name || options.registrationPayload.name || "",
+          email: options.registrationPayload.leader?.email || options.registrationPayload.email || "",
+          contact: options.registrationPayload.leader?.contact || options.registrationPayload.contact || "",
+        },
+        theme: {
+          color: "#3b82f6",
+        },
+        modal: {
+          ondismiss: function () {
+            toast.error("Payment cancelled");
           },
-          modal: {
-            ondismiss: function () {
-              console.warn('[Razorpay] Modal dismissed by user');
-              toast.info('Payment Cancelled', {
-                description: 'You can try again when ready.',
-              });
-              resolve({ success: false, error: 'Payment cancelled by user' });
-            }
-          },
-          prefill: {
-            // Pass registration data if available
-            name: registrationPayload?.leader?.name ?? registrationPayload?.participant?.name ?? '',
-            email: registrationPayload?.leader?.email ?? registrationPayload?.participant?.email ?? '',
-            contact: registrationPayload?.leader?.contact ?? registrationPayload?.participant?.contact ?? ''
-          },
-          theme: { color: '#111827' }
-        };
+        },
+      };
 
-        // Create Razorpay object
-        const rzp = new window.Razorpay(options);
+      // Create Razorpay instance
+      const razorpay = new (window as any).Razorpay(razorpayOptions);
 
-        // Attach event for failure
-        rzp.on('payment.failed', function (resp: any) {
-          console.error('[Razorpay] Payment failed', resp);
-          toast.error('Payment Failed', {
-            description: 'Your payment could not be processed. Please try again.',
+      // Open Razorpay checkout
+      return new Promise((resolve) => {
+        razorpay.on("payment.failed", function (response: any) {
+          const error = response.error.description || "Payment failed";
+          toast.error(error);
+          resolve({
+            success: false,
+            error,
           });
-          resolve({ success: false, error: resp });
         });
 
-        try {
-          rzp.open();
-          console.debug('[Razorpay] rzp.open() called successfully');
-        } catch (err) {
-          console.error('[Razorpay] rzp.open() failed', err);
-          reject(err);
-        }
-      });
+        // Override the handler to resolve the promise
+        razorpayOptions.handler = function (response: any) {
+          const paymentRecord = {
+            payment_id: response.razorpay_payment_id,
+            order_id: response.razorpay_order_id,
+            signature: response.razorpay_signature,
+            amount: options.amountPaise,
+            currency: "INR",
+            status: "success",
+            created_at: new Date().toISOString(),
+            registration_id: options.registrationId,
+            event: options.event,
+          };
 
-      setLoading(false);
-      return paymentResult;
-    } catch (err: any) {
-      console.error('[Razorpay] startPayment error', err);
-      setLoading(false);
-      const errorMessage = err?.message ?? String(err);
-      toast.error('Payment Error', {
-        description: errorMessage,
+          // Store payment record
+          const payments = JSON.parse(localStorage.getItem("technocratz_payments_v1") || "[]");
+          payments.push(paymentRecord);
+          localStorage.setItem("technocratz_payments_v1", JSON.stringify(payments));
+
+          toast.success("Payment successful!");
+          resolve({
+            success: true,
+            paymentRecord,
+          });
+        };
+
+        razorpay.open();
       });
-      return { success: false, error: errorMessage };
+    } catch (error) {
+      console.error("Payment error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Payment failed";
+      toast.error(errorMessage);
+      return {
+        success: false,
+        error: errorMessage,
+      };
+    } finally {
+      setLoading(false);
     }
-  }, []);
+  };
 
-  return { startPayment, loading };
+  return {
+    startPayment,
+    loading,
+  };
 }

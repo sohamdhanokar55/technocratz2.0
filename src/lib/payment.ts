@@ -3,7 +3,7 @@
  * Centralized payment logic for all event registrations
  */
 
-export const PAYMENT_PER_PERSON = 100; // ₹100 per person
+export const PAYMENT_PER_PERSON = 1; // ₹1 per person
 
 /**
  * Calculate total payment amount based on number of participants

@@ -613,16 +613,15 @@ const Index = () => {
       </section>
       {/* About Section */}
       <section id="about" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
-        {/* Sparkles Background */}
-        <div className="absolute inset-0 -z-10 opacity-35">
+        {/* Reduced particle effect for better performance */}
+        <div className="absolute inset-0 -z-10 opacity-20">
           <SparklesCore
             background="transparent"
-            minSize={0.5}
-            maxSize={2}
-            particleDensity={85}
+            minSize={0.6}
+            maxSize={1.2}
+            particleDensity={30}
             className="w-full h-full"
-            particleColor="#ffffff"
-            speed={1.2}
+            particleColor="#3B82F6"
           />
         </div>
         <div className="container mx-auto px-4">
@@ -703,18 +702,7 @@ const Index = () => {
       </section>
       {/* Competitions Section (moved above Leadership) */}
       <section id="competitions" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
-        {/* Sparkles Background */}
-        <div className="absolute inset-0 -z-10 opacity-30">
-          <SparklesCore
-            background="transparent"
-            minSize={0.6}
-            maxSize={2.2}
-            particleDensity={100}
-            className="w-full h-full"
-            particleColor="#ffffff"
-            speed={1.5}
-          />
-        </div>
+        {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -843,19 +831,7 @@ const Index = () => {
 
       {/* Timeline Section */}
       <section id="timeline" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 -z-10 opacity-15">
-          <SparklesCore
-            background="transparent"
-            minSize={0.5}
-            maxSize={1.5}
-            particleDensity={30}
-            className="w-full h-full"
-            particleColor="#ffffff"
-            speed={0.6}
-          />
-        </div>
-
+        {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           {/* Section Header */}
           <motion.div
@@ -1101,19 +1077,7 @@ const Index = () => {
 
       {/* Countdown Section */}
       <section id="countdown" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 -z-10 opacity-15">
-          <SparklesCore
-            background="transparent"
-            minSize={0.5}
-            maxSize={1.5}
-            particleDensity={25}
-            className="w-full h-full"
-            particleColor="#ffffff"
-            speed={0.5}
-          />
-        </div>
-
+        {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           {/* Section Header */}
           <motion.div
@@ -1481,8 +1445,8 @@ const Index = () => {
       )}
 
       <section id="whatsapp-community" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
-        {/* Sparkles Background */}
-        <div className="absolute inset-0 -z-10 opacity-35">
+        {/* Removed particles from this section for better performance */}
+        <div className="absolute inset-0 -z-10">
           <SparklesCore
             background="transparent"
             minSize={0.5}
@@ -1613,7 +1577,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="team/1.png"
+                      src="technocratz2.0/team/1.png"
                       alt="Swara Hande"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1663,7 +1627,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="team/2.png"
+                      src="technocratz2.0/team/2.png"
                       alt="Arush Wavhal"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1713,7 +1677,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="team/3.png"
+                      src="technocratz2.0/team/3.png"
                       alt="Olivia Ojas"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1763,7 +1727,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="team/4.png"
+                      src="technocratz2.0/team/4.png"
                       alt="Gauri Dhuri"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />

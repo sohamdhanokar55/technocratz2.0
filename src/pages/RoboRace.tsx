@@ -27,12 +27,19 @@ import {
 import { singleParticipantSchema, type SingleParticipantFormData } from "@/lib/schemas";
 import { calculateAmount, PAYMENT_PER_PERSON } from "@/lib/payment";
 import { saveRegistration, generateRegistrationId } from "@/lib/storage";
+import { useRazorpay } from "@/hooks/useRazorpay";
+import { rupeesToPaise } from "@/lib/payment";
+import SuccessModal from "@/components/payment/SuccessModal";
 
 const RoboRace = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isConfirmationOpen, setIsConfirmationOpen] = React.useState(false);
   const [registrationData, setRegistrationData] = React.useState<any>(null);
+  const [isSuccessOpen, setIsSuccessOpen] = React.useState(false);
+  const [paymentRecord, setPaymentRecord] = React.useState<any>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const { startPayment, loading: paymentLoading } = useRazorpay();
 
   const form = useForm<SingleParticipantFormData>({
     resolver: zodResolver(singleParticipantSchema),
@@ -49,8 +56,9 @@ const RoboRace = () => {
   const totalParticipants = 1;
   const totalAmount = calculateAmount(totalParticipants);
 
-  const onSubmit = (data: SingleParticipantFormData) => {
+  const onSubmit = async (data: SingleParticipantFormData) => {
     try {
+      setIsSubmitting(true);
       const registration = {
         id: generateRegistrationId(),
         event: "robo-race",
@@ -60,15 +68,38 @@ const RoboRace = () => {
         createdAt: new Date().toISOString(),
       };
 
+      // Save registration to localStorage first
       saveRegistration(registration);
       setRegistrationData(registration);
-      setIsConfirmationOpen(true);
-      sonnerToast.success("Registration successful!");
+
+      // Start Razorpay payment
+      const amountPaise = rupeesToPaise(totalAmount);
+      const result = await startPayment({
+        amountPaise,
+        event: "Robo Race Competition",
+        registrationPayload: registration,
+        registrationId: registration.id,
+      });
+
+      setIsSubmitting(false);
+
+      if (result.success) {
+        setPaymentRecord(result.paymentRecord);
+        setIsSuccessOpen(true);
+        sonnerToast.success("Payment successful!");
+      } else {
+        toast({
+          title: "Payment Failed",
+          description: result.error || "Payment was not completed. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Registration error:", error);
+      setIsSubmitting(false);
       toast({
         title: "Error",
-        description: "Failed to save registration. Please try again.",
+        description: "Failed to process registration. Please try again.",
         variant: "destructive",
       });
     }
@@ -319,9 +350,11 @@ const RoboRace = () => {
                   </Button>
                   <Button
                     type="submit"
+                    disabled={isSubmitting || paymentLoading}
                     className="px-8 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-cyan-500/50"
                   >
-                    Submit Registration
+                    <CreditCard className="w-5 h-5 mr-2" />
+                    {isSubmitting || paymentLoading ? "Processing..." : "Pay Now"}
                   </Button>
                 </div>
               </form>
@@ -380,6 +413,20 @@ const RoboRace = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Success Modal */}
+      <SuccessModal
+        open={isSuccessOpen}
+        onClose={() => {
+          setIsSuccessOpen(false);
+          navigate("/");
+        }}
+        eventName="Robo Race Competition"
+        registrationId={registrationData?.id || ""}
+        amountPaid={registrationData?.amountPaid || 0}
+        paymentId={paymentRecord?.payment_id || ""}
+        onDownloadReceipt={downloadReceipt}
+      />
     </div>
   );
 };

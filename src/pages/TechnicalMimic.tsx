@@ -84,23 +84,36 @@ const TechnicalMimic = () => {
 
       // Save registration to localStorage first
       saveRegistration(registration);
-      setIsSubmitting(false);
-      
-      // Navigate to payment page
-      navigate("/payment", {
-        state: {
-          amount: totalAmount,
-          registrationPayload: registration,
-          eventName: "Technical Mimic",
-          registrationId: registration.id,
-        },
+      setRegistrationData(registration);
+
+      // Start Razorpay payment
+      const amountPaise = rupeesToPaise(totalAmount);
+      const result = await startPayment({
+        amountPaise,
+        event: "Technical Mimic Competition",
+        registrationPayload: registration,
+        registrationId: registration.id,
       });
+
+      setIsSubmitting(false);
+
+      if (result.success) {
+        setPaymentRecord(result.paymentRecord);
+        setIsSuccessOpen(true);
+        sonnerToast.success("Payment successful!");
+      } else {
+        toast({
+          title: "Payment Failed",
+          description: result.error || "Payment was not completed. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Registration error:", error);
       setIsSubmitting(false);
       toast({
         title: "Error",
-        description: "Failed to save registration. Please try again.",
+        description: "Failed to process registration. Please try again.",
         variant: "destructive",
       });
     }
@@ -121,7 +134,7 @@ const TechnicalMimic = () => {
     // Start the payment flow and await result
     const result = await startPayment({
       amountPaise: rupeesToPaise(totalAmount), // ₹100 * participants → paise
-      eventName: "Technical Mimic",
+      event: "Technical Mimic",
       registrationPayload: registrationData,
     });
 
@@ -575,7 +588,7 @@ const TechnicalMimic = () => {
             <Button
               variant="outline"
               onClick={() => setIsConfirmOpen(false)}
-              disabled={isProcessingPayment}
+              // disabled={isProcessingPayment}
             >
               Cancel
             </Button>

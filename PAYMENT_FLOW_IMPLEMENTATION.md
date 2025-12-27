@@ -4,6 +4,8 @@
 
 ### Frontend Files
 
+import { saveToGoogleSheets } from '@/lib/sheets';
+
 1. **`src/pages/PaymentPage.tsx`** (NEW)
    - Payment page that reads amount, registrationPayload, eventName, registrationId from location.state
    - Shows amount or allows custom amount input
@@ -17,6 +19,30 @@
 3. **`src/components/payment/SuccessModal.tsx`** (UPDATED)
    - Shows payment summary with exact format
    - Download Receipt (JSON) and Close buttons
+
+   const handlePaymentSuccess = async (razorpayResponse: any) => {
+  try {
+    // Your existing success handling code
+    
+    // Add this after existing success handling
+    const saveSuccess = await saveToGoogleSheets({
+      eventName: 'Event Name', // Replace with actual event name
+      fullName: formData.fullName,
+      email: formData.email,
+      phone: formData.phone,
+      college: formData.college,
+      yearBranch: formData.yearBranch,
+      transactionId: razorpayResponse.razorpay_payment_id
+    });
+
+    if (!saveSuccess) {
+      console.warn('Registration successful but failed to save to Google Sheets');
+    }
+
+  } catch (error) {
+    console.error('Error in payment success handler:', error);
+  }
+};
 
 4. **`src/hooks/useRazorpay.ts`** (UPDATED)
    - Complete payment flow:
