@@ -21,17 +21,23 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter basename="/technocratz2.0">
+      <BrowserRouter basename="/technocratz2.0/">
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/register" element={<Register />} />
           {/* Per-event registration routes */}
-          <Route path="/register/technical-mimic" element={<TechnicalMimic />} />
+          <Route
+            path="/register/technical-mimic"
+            element={<TechnicalMimic />}
+          />
           <Route path="/register/autocad" element={<AutoCAD />} />
           <Route path="/register/blind-typing" element={<BlindTyping />} />
           <Route path="/register/robo-race" element={<RoboRace />} />
           <Route path="/register/hack-your-way" element={<HackYourWay />} />
-          <Route path="/register/bridge-building" element={<BridgeBuilding />} />
+          <Route
+            path="/register/bridge-building"
+            element={<BridgeBuilding />}
+          />
           <Route path="/payment" element={<PaymentPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

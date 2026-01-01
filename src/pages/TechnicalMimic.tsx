@@ -284,11 +284,12 @@ const TechnicalMimic = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Name <span className="text-red-500">*</span>
+                            Full Name ( Same as on the Certificate ){" "}
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Enter team leader name"
+                              placeholder="Enter team leader full name"
                               {...field}
                             />
                           </FormControl>
@@ -345,7 +346,7 @@ const TechnicalMimic = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Branch <span className="text-red-500">*</span>
+                              Department <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -413,7 +414,7 @@ const TechnicalMimic = () => {
                         className="p-6 bg-slate-700/30 rounded-xl border border-blue-500/20"
                       >
                         <h3 className="text-lg font-semibold text-blue-400 mb-4">
-                          Member {index + 1}
+                          Participant {index + 1}
                         </h3>
 
                         <div className="space-y-4">
@@ -423,11 +424,12 @@ const TechnicalMimic = () => {
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>
-                                  Name <span className="text-red-500">*</span>
+                                  Full Name ( Same as on the Certificate ){" "}
+                                  <span className="text-red-500">*</span>
                                 </FormLabel>
                                 <FormControl>
                                   <Input
-                                    placeholder="Enter member name"
+                                    placeholder="Enter participant full name"
                                     {...field}
                                   />
                                 </FormControl>
@@ -486,7 +488,7 @@ const TechnicalMimic = () => {
                               render={({ field }) => (
                                 <FormItem>
                                   <FormLabel>
-                                    Branch{" "}
+                                    Department{" "}
                                     <span className="text-red-500">*</span>
                                   </FormLabel>
                                   <FormControl>
@@ -572,18 +574,8 @@ const TechnicalMimic = () => {
                     className="px-8 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-cyan-500/50"
                     disabled={isSubmitting || paymentLoading}
                   >
-                    {isSubmitting ? "Saving..." : "Submit Registration"}
+                    {isSubmitting || paymentLoading ? "Processing..." : "Pay Now"}
                   </Button>
-                  {registrationData && (
-                    <Button
-                      type="button"
-                      onClick={() => setIsConfirmOpen(true)}
-                      className="px-8 bg-gradient-to-r from-green-500 to-emerald-400 text-white font-semibold hover:from-green-600 hover:to-emerald-500 shadow-lg shadow-green-500/50"
-                      disabled={isSubmitting || paymentLoading}
-                    >
-                      {paymentLoading ? "Processing..." : "Pay Now"}
-                    </Button>
-                  )}
                 </div>
               </form>
             </Form>

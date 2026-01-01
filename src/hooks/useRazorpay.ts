@@ -196,6 +196,16 @@ export function useRazorpay() {
                   options.event
                 );
                 if (receiptData) {
+                  // Add registration number from submission result if available
+                  if (submissionResult.data) {
+                    receiptData.registrationNumber =
+                      submissionResult.data.srNo ||
+                      submissionResult.data.sr_no ||
+                      submissionResult.data.serial_number ||
+                      submissionResult.data.registrationNumber ||
+                      submissionResult.data.registration_number ||
+                      "";
+                  }
                   console.log(
                     "[Receipt] Generating receipt after successful submission"
                   );

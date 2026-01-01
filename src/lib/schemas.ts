@@ -5,10 +5,12 @@ import { z } from "zod";
 
 // Base member schema (for team members)
 export const memberSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  contact: z.string().regex(/^\d{10}$/, "Contact must be exactly 10 digits"),
-  branch: z.string().min(1, "Branch is required"),
+  contact: z
+    .string()
+    .regex(/^\d{10}$/, "Contact number must be exactly 10 digits (numbers only)"),
+  branch: z.string().min(1, "Department is required"),
   semester: z.string().min(1, "Semester is required"),
 });
 
@@ -25,10 +27,12 @@ export const teamSchema = z.object({
 
 // Single participant schema
 export const singleParticipantSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Full name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  contact: z.string().regex(/^\d{10}$/, "Contact must be exactly 10 digits"),
-  branch: z.string().min(1, "Branch is required"),
+  contact: z
+    .string()
+    .regex(/^\d{10}$/, "Contact number must be exactly 10 digits (numbers only)"),
+  branch: z.string().min(1, "Department is required"),
   semester: z.string().min(1, "Semester is required"),
   institute: z.string().min(1, "Institute is required"),
 });

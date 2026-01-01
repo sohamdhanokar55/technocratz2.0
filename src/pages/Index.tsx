@@ -62,18 +62,20 @@ const Index = () => {
   // Helper function to extract max participants and fee
   const getCompetitionDetails = (competition: any) => {
     const note = competition.note || {};
-    
+
     // Try different key variations for max participants
-    let maxParticipantsStr = note["Maximum No.of Participants"] || 
-                             note["Maximum no of participants"] || 
-                             note["Maximum No of participants"] || "1";
-    
+    let maxParticipantsStr =
+      note["Maximum No.of Participants"] ||
+      note["Maximum no of participants"] ||
+      note["Maximum No of participants"] ||
+      "1";
+
     // Try different key variations for fee
     let feeStr = note["Participation Fee"] || "0";
-    
+
     const maxParticipants = parseInt(maxParticipantsStr) || 1;
     const fee = parseInt(feeStr.replace(/[^\d]/g, "")) || 0;
-    
+
     return { maxParticipants, fee };
   };
 
@@ -139,10 +141,10 @@ const Index = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Countdown timer for registration deadline (Jan 10, 2026)
+  // Countdown timer for registration deadline (Jan 12, 2026)
   useEffect(() => {
     const updateCountdown = () => {
-      const registrationDeadline = new Date("2026-01-10T23:59:59").getTime();
+      const registrationDeadline = new Date("2026-01-12T23:59:59").getTime();
       const now = new Date().getTime();
       const difference = registrationDeadline - now;
 
@@ -179,7 +181,7 @@ const Index = () => {
       note: {
         "Maximum No.of Participants": "4",
         "Participation Fee": "Rs. 200",
-        "Time": "2:30 PM",
+        Time: "2:30 PM",
       },
     },
     {
@@ -205,7 +207,7 @@ const Index = () => {
       note: {
         "Maximum no of participants": "2",
         "Participation Fee": "Rs 100",
-        "Time": "1:30 PM",
+        Time: "1:30 PM",
       },
     },
     {
@@ -221,7 +223,7 @@ const Index = () => {
       note: {
         "Maximum no of participants": "1",
         "Participation Fee": "Rs. 50/-",
-        "Time": "1:30 PM",
+        Time: "1:30 PM",
       },
     },
     {
@@ -251,7 +253,7 @@ const Index = () => {
       note: {
         "Maximum no of participants": "2",
         "Participation Fee": "Rs 100",
-        "Time": "1:30 PM",
+        Time: "1:30 PM",
       },
     },
     {
@@ -268,7 +270,7 @@ const Index = () => {
       note: {
         "Maximum no of participants": "1",
         "Participation Fee": "Rs. 50/-",
-        "Time": "1:30 PM",
+        Time: "1:30 PM",
       },
     },
     {
@@ -284,7 +286,7 @@ const Index = () => {
       note: {
         "Maximum no of participants": "2",
         "Participation Fee": "Rs 100",
-        "Time": "1:30 PM",
+        Time: "1:30 PM",
       },
     },
   ];
@@ -335,7 +337,9 @@ const Index = () => {
                 alt="TechnoCratz Logo"
                 className="w-24 h-24 object-contain hover:scale-110 transition-transform duration-300"
               />
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent">APV TECHNOCRATZ 2.0</span>
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent">
+                APV TECHNOCRATZ 2.0
+              </span>
             </motion.div>
             <div className="hidden md:flex space-x-10">
               {[
@@ -399,14 +403,16 @@ const Index = () => {
                   transition={{ duration: 0.6 }}
                   className="inline-block mb-4 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-cyan-400/50 backdrop-blur-sm"
                 >
-                  <span className="text-cyan-400 font-semibold text-sm">🚀 TECHNOCRATZ 2.0 - LIVE EVENT</span>
+                  <span className="text-cyan-400 font-semibold text-sm">
+                    🚀 TECHNOCRATZ 2.0 - LIVE EVENT
+                  </span>
                 </motion.div>
 
                 <motion.h1
                   initial="hidden"
                   animate="visible"
                   transition={{ delayChildren: 0.25 }}
-                  className="text-5xl lg:text-8xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg"
+                  className="text-4xl sm:text-5xl lg:text-8xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg px-4"
                 >
                   {"TECHNOCRATZ 2.0".split("").map((char, i) => (
                     <motion.span
@@ -425,7 +431,7 @@ const Index = () => {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.9 }}
-                  className="text-lg lg:text-2xl text-blue-300 font-medium"
+                  className="text-base sm:text-lg lg:text-2xl text-blue-300 font-medium px-4"
                 >
                   <span className="font-semibold">
                     Agnel Polytechnic, Vashi
@@ -534,7 +540,7 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.7 }}
-                className="flex flex-col sm:flex-row gap-6 justify-center mt-8"
+                className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mt-8 px-4"
               >
                 <motion.div
                   whileHover={{ scale: 1.05, y: -3 }}
@@ -542,11 +548,21 @@ const Index = () => {
                 >
                   <Button
                     asChild
-                    className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-400 text-white text-lg px-12 py-6 group ring-2 ring-cyan-400/50 hover:ring-cyan-300 rounded-xl font-bold shadow-lg shadow-cyan-500/50 transition-all duration-300"
+                    className="bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-400 text-white text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 group ring-2 ring-cyan-400/50 hover:ring-cyan-300 rounded-xl font-bold shadow-lg shadow-cyan-500/50 transition-all duration-300 w-full sm:w-auto"
                   >
                     <a
-                      href="#register"
+                      href="#competitions"
                       className="flex items-center justify-center"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const element = document.getElementById("competitions");
+                        if (element) {
+                          element.scrollIntoView({
+                            behavior: "smooth",
+                            block: "start",
+                          });
+                        }
+                      }}
                     >
                       <motion.div
                         animate={{ rotate: [0, 15, -15, 0] }}
@@ -569,7 +585,7 @@ const Index = () => {
                 >
                   <Button
                     asChild
-                    className="border-2 border-purple-400 text-purple-300 text-lg px-12 py-6 group ring-2 ring-purple-400/50 hover:ring-purple-300 rounded-xl font-bold bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300 shadow-lg shadow-purple-500/30"
+                    className="border-2 border-purple-400 text-purple-300 text-base sm:text-lg px-8 sm:px-12 py-4 sm:py-6 group ring-2 ring-purple-400/50 hover:ring-purple-300 rounded-xl font-bold bg-gradient-to-r from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300 shadow-lg shadow-purple-500/30 w-full sm:w-auto"
                   >
                     <a
                       href="#competitions"
@@ -612,7 +628,10 @@ const Index = () => {
         />
       </section>
       {/* About Section */}
-      <section id="about" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="about"
+        className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Reduced particle effect for better performance */}
         <div className="absolute inset-0 -z-10 opacity-20">
           <SparklesCore
@@ -701,7 +720,10 @@ const Index = () => {
         </div>
       </section>
       {/* Competitions Section (moved above Leadership) */}
-      <section id="competitions" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="competitions"
+        className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           <motion.div
@@ -717,9 +739,11 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/50 backdrop-blur-sm"
             >
-              <span className="text-purple-400 font-semibold text-sm">⚡ TECHNICAL CHALLENGES</span>
+              <span className="text-purple-400 font-semibold text-sm">
+                ⚡ TECHNICAL CHALLENGES
+              </span>
             </motion.div>
-            
+
             <motion.h2
               className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg"
               initial={{ opacity: 0, y: 20 }}
@@ -784,10 +808,10 @@ const Index = () => {
                 <div className="relative h-full bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-blue-500/40 rounded-2xl p-8 hover:border-cyan-400/70 transition-all duration-300 backdrop-blur-md overflow-hidden shadow-xl shadow-blue-500/10 hover:shadow-cyan-500/20">
                   {/* Animated background gradient on hover */}
                   <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-cyan-500/0 to-blue-500/0 group-hover:from-blue-500/15 group-hover:via-cyan-500/15 group-hover:to-blue-500/15 transition-all duration-500" />
-                  
+
                   {/* Glow effect on hover */}
                   <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-600 rounded-2xl opacity-0 group-hover:opacity-20 blur transition-opacity duration-300 -z-10" />
-                  
+
                   <div className="relative z-10">
                     <motion.div
                       className="mb-6 inline-block p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20"
@@ -796,15 +820,15 @@ const Index = () => {
                     >
                       <competition.icon className="w-12 h-12 text-cyan-400 group-hover:text-blue-300 transition-colors duration-300" />
                     </motion.div>
-                    
+
                     <h3 className="text-xl font-bold mb-3 text-white group-hover:text-cyan-300 transition-colors duration-300">
                       {competition.title}
                     </h3>
-                    
+
                     <p className="text-sm text-gray-300 mb-4 leading-relaxed">
                       {competition.description}
                     </p>
-                    
+
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -830,7 +854,10 @@ const Index = () => {
       </section>
 
       {/* Timeline Section */}
-      <section id="timeline" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="timeline"
+        className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           {/* Section Header */}
@@ -847,9 +874,11 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/50 backdrop-blur-sm"
             >
-              <span className="text-green-400 font-semibold text-sm">📅 EVENT TIMELINE</span>
+              <span className="text-green-400 font-semibold text-sm">
+                📅 EVENT TIMELINE
+              </span>
             </motion.div>
-            
+
             <motion.h2
               className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-green-400 via-emerald-300 to-green-300 bg-clip-text text-transparent drop-shadow-lg"
               initial={{ opacity: 0, y: 20 }}
@@ -858,7 +887,7 @@ const Index = () => {
             >
               Event Schedule
             </motion.h2>
-            
+
             <motion.p
               className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed"
               initial={{ opacity: 0 }}
@@ -890,8 +919,8 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-green-400">Dec 15</p>
-                    <p className="text-sm text-gray-400">2025</p>
+                    <p className="text-2xl font-bold text-green-400">Jan 4</p>
+                    <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
 
@@ -909,8 +938,13 @@ const Index = () => {
                     whileHover={{ scale: 1.05, y: -5 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-green-500/40 backdrop-blur-md shadow-lg shadow-green-500/10 hover:shadow-green-500/30 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-green-400 mb-2">🚀 Launch Date</h3>
-                    <p className="text-gray-300 text-sm">Registration portal opens. Get ready to showcase your skills!</p>
+                    <h3 className="text-xl font-bold text-green-400 mb-2">
+                      🚀 Launch Date
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      Registration portal opens. Get ready to showcase your
+                      skills!
+                    </p>
                   </motion.div>
                 </div>
               </motion.div>
@@ -929,8 +963,13 @@ const Index = () => {
                     whileHover={{ scale: 1.05, y: -5 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-blue-500/40 backdrop-blur-md shadow-lg shadow-blue-500/10 hover:shadow-blue-500/30 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-blue-400 mb-2">📝 Registration Deadline</h3>
-                    <p className="text-gray-300 text-sm">Last chance to register! Secure your spot in the competition.</p>
+                    <h3 className="text-xl font-bold text-blue-400 mb-2">
+                      📝 Registration Deadline
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      Last chance to register! Secure your spot in the
+                      competition.
+                    </p>
                   </motion.div>
                 </div>
 
@@ -948,7 +987,7 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-blue-400">Jan 5</p>
+                    <p className="text-2xl font-bold text-blue-400">Jan 12</p>
                     <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
@@ -968,7 +1007,7 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-purple-400">Jan 17</p>
+                    <p className="text-2xl font-bold text-purple-400">Jan 16</p>
                     <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
@@ -987,8 +1026,12 @@ const Index = () => {
                     whileHover={{ scale: 1.05, y: -5 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-purple-500/40 backdrop-blur-md shadow-lg shadow-purple-500/10 hover:shadow-purple-500/30 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-purple-400 mb-2">⚡ Competition Day 1</h3>
-                    <p className="text-gray-300 text-sm">Preliminary rounds begin. Showcase your technical prowess!</p>
+                    <h3 className="text-xl font-bold text-purple-400 mb-2">
+                      ⚡ Competition Day 1
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      Preliminary rounds begin. Showcase your technical prowess!
+                    </p>
                   </motion.div>
                 </div>
               </motion.div>
@@ -1007,8 +1050,12 @@ const Index = () => {
                     whileHover={{ scale: 1.05, y: -5 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-orange-500/40 backdrop-blur-md shadow-lg shadow-orange-500/10 hover:shadow-orange-500/30 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-orange-400 mb-2">🔥 Competition Day 2</h3>
-                    <p className="text-gray-300 text-sm">Finals and intense battles. Who will be crowned champion?</p>
+                    <h3 className="text-xl font-bold text-orange-400 mb-2">
+                      🔥 Competition Day 2
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      Finals and intense battles. Who will be crowned champion?
+                    </p>
                   </motion.div>
                 </div>
 
@@ -1026,7 +1073,7 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-orange-500/20 to-yellow-500/20 border border-orange-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-orange-400">Jan 18</p>
+                    <p className="text-2xl font-bold text-orange-400">Jan 17</p>
                     <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
@@ -1046,8 +1093,8 @@ const Index = () => {
                     whileHover={{ scale: 1.05 }}
                     className="p-4 rounded-lg bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-400/50 backdrop-blur-sm inline-block"
                   >
-                    <p className="text-2xl font-bold text-yellow-400">Jan 18</p>
-                    <p className="text-sm text-gray-400">Evening</p>
+                    <p className="text-2xl font-bold text-yellow-400">Jan 17</p>
+                    <p className="text-sm text-gray-400">2026</p>
                   </motion.div>
                 </div>
 
@@ -1065,8 +1112,13 @@ const Index = () => {
                     whileHover={{ scale: 1.05, y: -5 }}
                     className="p-6 rounded-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border border-yellow-500/40 backdrop-blur-md shadow-lg shadow-yellow-500/10 hover:shadow-yellow-500/30 transition-all duration-300"
                   >
-                    <h3 className="text-xl font-bold text-yellow-400 mb-2">🏆 Prize Distribution</h3>
-                    <p className="text-gray-300 text-sm">Celebrate the winners! Recognition and rewards await the champions.</p>
+                    <h3 className="text-xl font-bold text-yellow-400 mb-2">
+                      🏆 Prize Distribution
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      Celebrate the winners! Recognition and rewards await the
+                      champions.
+                    </p>
                   </motion.div>
                 </div>
               </motion.div>
@@ -1076,7 +1128,10 @@ const Index = () => {
       </section>
 
       {/* Countdown Section */}
-      <section id="countdown" className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="countdown"
+        className="py-20 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Removed particles from this section for better performance */}
         <div className="container mx-auto px-4">
           {/* Section Header */}
@@ -1093,7 +1148,9 @@ const Index = () => {
               transition={{ duration: 0.6 }}
               className="inline-block mb-4 px-6 py-2 rounded-full bg-gradient-to-r from-red-500/20 to-pink-500/20 border border-red-400/50 backdrop-blur-sm"
             >
-              <span className="text-red-400 font-semibold text-sm">⏰ REGISTRATION CLOSING IN</span>
+              <span className="text-red-400 font-semibold text-sm">
+                ⏰ REGISTRATION CLOSING IN
+              </span>
             </motion.div>
 
             <motion.h2
@@ -1111,7 +1168,8 @@ const Index = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              Don't miss your chance to compete! Secure your spot before the deadline.
+              Don't miss your chance to compete! Secure your spot before the
+              deadline.
             </motion.p>
           </motion.div>
 
@@ -1138,7 +1196,9 @@ const Index = () => {
                   >
                     {String(countdown.days).padStart(2, "0")}
                   </motion.div>
-                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Days</div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">
+                    Days
+                  </div>
                 </div>
               </motion.div>
 
@@ -1156,7 +1216,9 @@ const Index = () => {
                   >
                     {String(countdown.hours).padStart(2, "0")}
                   </motion.div>
-                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Hours</div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">
+                    Hours
+                  </div>
                 </div>
               </motion.div>
 
@@ -1174,7 +1236,9 @@ const Index = () => {
                   >
                     {String(countdown.minutes).padStart(2, "0")}
                   </motion.div>
-                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Minutes</div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">
+                    Minutes
+                  </div>
                 </div>
               </motion.div>
 
@@ -1192,7 +1256,9 @@ const Index = () => {
                   >
                     {String(countdown.seconds).padStart(2, "0")}
                   </motion.div>
-                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">Seconds</div>
+                  <div className="text-sm md:text-base font-semibold text-gray-400 uppercase tracking-wider">
+                    Seconds
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -1212,7 +1278,10 @@ const Index = () => {
                   asChild
                   className="bg-gradient-to-r from-red-600 via-pink-500 to-red-400 text-white text-lg px-12 py-6 group ring-2 ring-pink-400/50 hover:ring-pink-300 rounded-xl font-bold shadow-lg shadow-pink-500/50 transition-all duration-300"
                 >
-                  <a href="#register" className="flex items-center justify-center">
+                  <a
+                    href="#register"
+                    className="flex items-center justify-center"
+                  >
                     <Zap className="w-6 h-6 mr-3 group-hover:animate-pulse" />
                     Register Now Before It's Too Late!
                   </a>
@@ -1233,7 +1302,10 @@ const Index = () => {
       </section>
       */}
       {/* About Us Section */}
-      <section id="about-us" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="about-us"
+        className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Sparkles Background */}
         <div className="absolute inset-0 -z-10 opacity-20">
           <SparklesCore
@@ -1329,7 +1401,7 @@ const Index = () => {
           <div className="relative bg-gradient-to-br from-slate-900 to-black rounded-2xl shadow-2xl w-full max-w-2xl my-8 border border-blue-500/30">
             <div className="max-h-[90vh] overflow-y-auto">
               <div className="p-8">
-                <motion.h3 
+                <motion.h3
                   className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -1357,12 +1429,18 @@ const Index = () => {
                     RULES FOR THE COMPETITION
                   </h4>
                   <ul className="space-y-3">
-                    {selectedCompetition.rules?.map((rule: string, index: number) => (
-                      <li key={index} className="flex items-start gap-3">
-                        <span className="text-cyan-400 font-bold mt-0.5 flex-shrink-0">•</span>
-                        <span className="text-gray-300 text-sm leading-relaxed">{rule}</span>
-                      </li>
-                    ))}
+                    {selectedCompetition.rules?.map(
+                      (rule: string, index: number) => (
+                        <li key={index} className="flex items-start gap-3">
+                          <span className="text-cyan-400 font-bold mt-0.5 flex-shrink-0">
+                            •
+                          </span>
+                          <span className="text-gray-300 text-sm leading-relaxed">
+                            {rule}
+                          </span>
+                        </li>
+                      )
+                    )}
                   </ul>
                 </div>
 
@@ -1373,12 +1451,18 @@ const Index = () => {
                       TRACK & GAME RULES
                     </h4>
                     <ul className="space-y-3">
-                      {selectedCompetition.trackRules.map((rule: string, index: number) => (
-                        <li key={index} className="flex items-start gap-3">
-                          <span className="text-cyan-400 font-bold mt-0.5 flex-shrink-0">•</span>
-                          <span className="text-gray-300 text-sm leading-relaxed">{rule}</span>
-                        </li>
-                      ))}
+                      {selectedCompetition.trackRules.map(
+                        (rule: string, index: number) => (
+                          <li key={index} className="flex items-start gap-3">
+                            <span className="text-cyan-400 font-bold mt-0.5 flex-shrink-0">
+                              •
+                            </span>
+                            <span className="text-gray-300 text-sm leading-relaxed">
+                              {rule}
+                            </span>
+                          </li>
+                        )
+                      )}
                     </ul>
                   </div>
                 )}
@@ -1389,32 +1473,50 @@ const Index = () => {
                     <h4 className="text-lg font-bold mb-4 text-cyan-400 border-b-2 border-blue-500/30 pb-2">
                       COMPETITION ROUNDS
                     </h4>
-                    {Object.entries(selectedCompetition.rounds).map(([group, roundsList]: [string, any]) => (
-                      <div key={group} className="mb-5">
-                        <p className="font-semibold text-blue-400 mb-3 text-sm">{group}</p>
-                        <ul className="space-y-2 ml-4">
-                          {roundsList.map((round: string, index: number) => (
-                            <li key={index} className="flex items-start gap-3">
-                              <span className="text-cyan-300 font-bold mt-0.5 flex-shrink-0">◦</span>
-                              <span className="text-gray-300 text-sm">{round}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
+                    {Object.entries(selectedCompetition.rounds).map(
+                      ([group, roundsList]: [string, any]) => (
+                        <div key={group} className="mb-5">
+                          <p className="font-semibold text-blue-400 mb-3 text-sm">
+                            {group}
+                          </p>
+                          <ul className="space-y-2 ml-4">
+                            {roundsList.map((round: string, index: number) => (
+                              <li
+                                key={index}
+                                className="flex items-start gap-3"
+                              >
+                                <span className="text-cyan-300 font-bold mt-0.5 flex-shrink-0">
+                                  ◦
+                                </span>
+                                <span className="text-gray-300 text-sm">
+                                  {round}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    )}
                   </div>
                 )}
 
                 {/* Note Section */}
                 {selectedCompetition.note && (
                   <div className="mb-6 bg-blue-500/10 border-l-4 border-cyan-400 p-4 rounded-lg">
-                    <h4 className="text-base font-bold mb-3 text-cyan-400">Note:</h4>
+                    <h4 className="text-base font-bold mb-3 text-cyan-400">
+                      Note:
+                    </h4>
                     <div className="space-y-2">
-                      {Object.entries(selectedCompetition.note).map(([key, value]: [string, any]) => (
-                        <p key={key} className="text-gray-300 text-sm">
-                          <span className="font-semibold text-cyan-400">{key}:</span> {value}
-                        </p>
-                      ))}
+                      {Object.entries(selectedCompetition.note).map(
+                        ([key, value]: [string, any]) => (
+                          <p key={key} className="text-gray-300 text-sm">
+                            <span className="font-semibold text-cyan-400">
+                              {key}:
+                            </span>{" "}
+                            {value}
+                          </p>
+                        )
+                      )}
                     </div>
                   </div>
                 )}
@@ -1422,14 +1524,14 @@ const Index = () => {
 
               {/* Sticky Footer */}
               <div className="sticky bottom-0 bg-gradient-to-r from-slate-900 to-black border-t border-blue-500/30 p-6 flex gap-3 justify-end">
-                <Button 
+                <Button
                   onClick={() => setIsModalOpen(false)}
                   className="px-6 border-2 border-blue-400 text-blue-300 hover:bg-blue-400/10 hover:text-cyan-300 transition-all duration-300 font-semibold"
                   variant="outline"
                 >
                   Close
                 </Button>
-                <Button 
+                <Button
                   onClick={() => {
                     handleRegisterClick(selectedCompetition);
                     setIsModalOpen(false);
@@ -1444,7 +1546,10 @@ const Index = () => {
         </div>
       )}
 
-      <section id="whatsapp-community" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden">
+      <section
+        id="whatsapp-community"
+        className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 relative overflow-hidden"
+      >
         {/* Removed particles from this section for better performance */}
         <div className="absolute inset-0 -z-10">
           <SparklesCore
@@ -1458,7 +1563,7 @@ const Index = () => {
           />
         </div>
         <div className="container mx-auto px-4 text-center">
-          <motion.h2 
+          <motion.h2
             className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1466,7 +1571,7 @@ const Index = () => {
           >
             WhatsApp Community
           </motion.h2>
-          <motion.p 
+          <motion.p
             className="mb-8 text-lg text-gray-300 max-w-2xl mx-auto"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -1475,7 +1580,7 @@ const Index = () => {
             Join our WhatsApp community for quick updates and announcements.
           </motion.p>
           <motion.a
-            href="https://chat.whatsapp.com/your-group-link"
+            href="https://chat.whatsapp.com/Lfev9E9GC6fLsLqysc4zAw"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-400 hover:from-green-600 hover:to-emerald-500 text-white rounded-full font-semibold shadow-lg shadow-green-500/50 transition-all duration-300"
@@ -1912,7 +2017,10 @@ const Index = () => {
       </section>
 
       {/* Footer Section */}
-      <footer id="contact" className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white border-t border-blue-500/30">
+      <footer
+        id="contact"
+        className="py-16 bg-gradient-to-b from-slate-950 via-black to-slate-950 text-white border-t border-blue-500/30"
+      >
         <div className="container mx-auto px-4">
           <motion.div
             variants={{

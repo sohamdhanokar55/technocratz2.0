@@ -202,11 +202,12 @@ const BridgeBuilding = () => {
                       render={({ field }) => (
                         <FormItem>
                           <FormLabel>
-                            Name <span className="text-red-500">*</span>
+                            Full Name ( Same as on the Certificate ){" "}
+                            <span className="text-red-500">*</span>
                           </FormLabel>
                           <FormControl>
                             <Input
-                              placeholder="Enter team leader name"
+                              placeholder="Enter team leader full name"
                               {...field}
                             />
                           </FormControl>
@@ -263,7 +264,7 @@ const BridgeBuilding = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Branch <span className="text-red-500">*</span>
+                              Department <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                               <Input
@@ -327,7 +328,7 @@ const BridgeBuilding = () => {
                     className="p-6 bg-slate-700/30 rounded-xl border border-blue-500/20"
                   >
                     <h3 className="text-lg font-semibold text-blue-400 mb-4">
-                      Member 1
+                      Participant 1
                     </h3>
 
                     <div className="space-y-4">
@@ -337,11 +338,12 @@ const BridgeBuilding = () => {
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>
-                              Name <span className="text-red-500">*</span>
+                              Full Name ( Same as on the Certificate ){" "}
+                              <span className="text-red-500">*</span>
                             </FormLabel>
                             <FormControl>
                               <Input
-                                placeholder="Enter member name"
+                                placeholder="Enter participant full name"
                                 {...field}
                               />
                             </FormControl>
@@ -398,7 +400,7 @@ const BridgeBuilding = () => {
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>
-                                Branch <span className="text-red-500">*</span>
+                                Department <span className="text-red-500">*</span>
                               </FormLabel>
                               <FormControl>
                                 <Input

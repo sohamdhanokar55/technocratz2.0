@@ -199,10 +199,11 @@ const BlindTyping = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Name <span className="text-red-500">*</span>
+                        Full Name ( Same as on the Certificate ){" "}
+                        <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your name" {...field} />
+                        <Input placeholder="Enter your full name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -256,7 +257,7 @@ const BlindTyping = () => {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Branch <span className="text-red-500">*</span>
+                          Department <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input placeholder="e.g., CE, ME, AE" {...field} />
