@@ -144,7 +144,19 @@ export function buildSubmissionPayload(
     }
   }
 
-  console.log("[Submission] Payload built:", payload);
+  console.log("[Submission] ✅ Payload built successfully");
+  console.log("[Submission] Final payload structure:", {
+    hasPaymentStatus: !!payload.payment_status,
+    hasPaymentId: !!payload.razorpay_payment_id,
+    hasOrderId: !!payload.razorpay_order_id,
+    hasSignature: !!payload.razorpay_signature,
+    hasCompetition: !!payload.competition,
+    hasTeamMembers: !!payload.team_members,
+    hasEmail: !!payload.email,
+    hasContact: !!payload.contact,
+    hasInstitute: !!payload.institute,
+  });
+  console.log("[Submission] Payload built:", JSON.stringify(payload, null, 2));
   return payload;
 }
 

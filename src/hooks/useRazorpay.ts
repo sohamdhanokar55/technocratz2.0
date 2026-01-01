@@ -20,6 +20,12 @@ interface PaymentOptions {
 interface PaymentResult {
   success: boolean;
   paymentRecord?: any;
+  submissionData?: {
+    srNo?: string | number;
+    success: boolean;
+    message?: string;
+    [key: string]: any;
+  };
   error?: string;
 }
 
@@ -73,13 +79,27 @@ export function useRazorpay() {
       const prefillContact =
         registrationData?.leader?.contact || registrationData?.contact || "";
 
+      // Track submission state to prevent duplicates
+      let submissionInProgress = false;
+
       // Open Razorpay checkout - handler MUST be defined before creating instance
       return new Promise((resolve) => {
         // Payment success handler - wrapped in try-catch to NEVER throw
         // This handler is called by Razorpay SDK after successful payment
         const paymentSuccessHandler = async function (response: any) {
+          console.log("[Payment] ========================================");
           console.log("[Payment] Razorpay success callback fired");
-          console.log("[Payment] Success response:", response);
+          console.log("[Payment] Timestamp:", new Date().toISOString());
+          console.log(
+            "[Payment] Success response:",
+            JSON.stringify(response, null, 2)
+          );
+          console.log("[Payment] Payment ID:", response.razorpay_payment_id);
+          console.log("[Payment] Order ID:", response.razorpay_order_id);
+          console.log(
+            "[Payment] Signature present:",
+            !!response.razorpay_signature
+          );
 
           // CRITICAL: Wrap everything in try-catch to prevent any errors from breaking the flow
           try {
@@ -111,16 +131,36 @@ export function useRazorpay() {
             );
             console.log("[Payment] Payment record stored in localStorage");
 
-            toast.success("Payment successful!");
+            // Prevent duplicate submissions
+            if (submissionInProgress) {
+              console.warn(
+                "[Payment] Submission already in progress, skipping duplicate"
+              );
+              setLoading(false);
+              resolve({
+                success: true,
+                paymentRecord,
+              });
+              return;
+            }
+
+            submissionInProgress = true;
+            toast.success("Payment successful! Submitting registration...");
 
             // Submit registration data to backend
-            console.log("[Payment] Preparing to submit registration data");
+            console.log(
+              "[Payment] Preparing to submit registration data to backend"
+            );
             const eventSlug = options.registrationPayload.event || "";
             const competitionName = mapEventToCompetition(
               options.event,
               eventSlug
             );
             console.log("[Payment] Competition name:", competitionName);
+            console.log(
+              "[Payment] Registration payload:",
+              options.registrationPayload
+            );
 
             const submissionPayload = buildSubmissionPayload(
               options.registrationPayload,
@@ -128,13 +168,25 @@ export function useRazorpay() {
               competitionName
             );
 
+            console.log(
+              "[Payment] Final submission payload:",
+              JSON.stringify(submissionPayload, null, 2)
+            );
+
             const submissionResult = await submitRegistrationData(
               submissionPayload
             );
 
+            submissionInProgress = false;
+
             if (submissionResult.success) {
-              console.log("[Payment] Submission successful");
-              console.log("[Submission] Completed successfully");
+              console.log("[Payment] ✅ Submission successful");
+              console.log("[Payment] Backend response:", submissionResult.data);
+
+              // Show success message with email confirmation notice
+              toast.success(
+                "Registration submitted successfully! A confirmation email will be sent to you shortly."
+              );
 
               // Generate and download PDF receipt
               try {
@@ -163,9 +215,10 @@ export function useRazorpay() {
               resolve({
                 success: true,
                 paymentRecord,
+                submissionData: submissionResult.data,
               });
             } else {
-              console.error("[Payment] Submission failed");
+              console.error("[Payment] ❌ Submission failed");
               console.error(
                 "[Submission] Failure stage:",
                 submissionResult.stage
@@ -175,68 +228,67 @@ export function useRazorpay() {
                 submissionResult.error
               );
 
-              // Store failed submission
+              // Store failed submission for retry
               storeFailedSubmission(
                 submissionPayload,
                 submissionResult.error || "Submission failed",
                 submissionResult.stage
               );
 
-              // Show error but don't fail payment (payment was successful)
+              // Show user-friendly error message
+              let errorMessage = "Submission failed. ";
+              if (submissionResult.stage === "network_error") {
+                errorMessage +=
+                  "Please check your internet connection and try again.";
+              } else if (submissionResult.stage === "backend_rejection") {
+                errorMessage +=
+                  submissionResult.error || "The server rejected the request.";
+              } else {
+                errorMessage +=
+                  submissionResult.error ||
+                  "Please contact support with your Payment ID.";
+              }
+
               toast.error(
-                `Payment successful but submission failed: ${submissionResult.error}`
+                `Payment successful but ${errorMessage} Payment ID: ${response.razorpay_payment_id}`
               );
 
               setLoading(false);
               resolve({
                 success: true, // Payment was successful
                 paymentRecord,
+                submissionData: {
+                  success: false,
+                  error: submissionResult.error,
+                  stage: submissionResult.stage,
+                },
               });
             }
           } catch (error) {
-            console.error("[Payment] Error in payment success handler:", error);
-            const errorMessage =
-              error instanceof Error ? error.message : "Unknown error";
-            toast.error(
-              `Payment successful but processing failed: ${errorMessage}`
-            );
-            setLoading(false);
-            resolve({
-              success: true, // Payment was successful, but submission failed
-              paymentRecord: {
-                payment_id: response.razorpay_payment_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                order_id: response.razorpay_order_id,
-                status: "success",
-                error: errorMessage,
-              },
-            });
-          }
-          try {
-          } catch (handlerError) {
             // CRITICAL: This catch ensures the handler NEVER throws
             // Even if something goes wrong, we log it and resolve gracefully
             console.error(
               "[Payment] CRITICAL: Error in payment success handler:",
-              handlerError
+              error
             );
             const errorMessage =
-              handlerError instanceof Error
-                ? handlerError.message
+              error instanceof Error
+                ? error.message
                 : "Unknown error in handler";
 
             // Log the full error for debugging
             console.error("[Payment] Handler error details:", {
-              error: handlerError,
-              stack:
-                handlerError instanceof Error ? handlerError.stack : undefined,
+              error: error,
+              stack: error instanceof Error ? error.stack : undefined,
               response: response,
             });
 
             // Show user-friendly error
             try {
               toast.error(
-                `Payment successful but processing failed: ${errorMessage}`
+                `Payment successful but processing failed: ${errorMessage}. Please contact support with your Payment ID: ${
+                  response?.razorpay_payment_id || "N/A"
+                }`
               );
             } catch (toastError) {
               console.error("[Payment] Failed to show toast:", toastError);
@@ -263,15 +315,36 @@ export function useRazorpay() {
         // Payment failed handler - also wrapped to never throw
         const paymentFailedHandler = function (response: any) {
           try {
-            console.log("[Payment] Payment failed callback fired");
-            console.log("[Payment] Failure response:", response);
-            const error = response?.error?.description || "Payment failed";
+            console.log("[Payment] ❌ Payment failed callback fired");
+            console.log(
+              "[Payment] Failure response:",
+              JSON.stringify(response, null, 2)
+            );
+            const error =
+              response?.error?.description ||
+              response?.error?.reason ||
+              "Payment failed";
+            const errorCode = response?.error?.code || "UNKNOWN";
             console.error("[Payment] Payment failed - Error:", error);
-            toast.error(error);
+            console.error("[Payment] Payment failed - Error code:", errorCode);
+
+            // Show user-friendly error message
+            let userMessage = error;
+            if (errorCode === "BAD_REQUEST_ERROR") {
+              userMessage = "Invalid payment details. Please try again.";
+            } else if (errorCode === "GATEWAY_ERROR") {
+              userMessage =
+                "Payment gateway error. Please try again in a moment.";
+            } else if (error.includes("card")) {
+              userMessage =
+                "Card payment failed. Please check your card details or try a different payment method.";
+            }
+
+            toast.error(userMessage);
             setLoading(false);
             resolve({
               success: false,
-              error,
+              error: userMessage,
             });
           } catch (errorHandler) {
             console.error(
@@ -281,7 +354,7 @@ export function useRazorpay() {
             setLoading(false);
             resolve({
               success: false,
-              error: "Payment failed",
+              error: "Payment could not be processed. Please try again.",
             });
           }
         };
