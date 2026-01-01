@@ -38,7 +38,7 @@ const PaymentPage = () => {
 
   useEffect(() => {
     const state = location.state as PaymentPageState | null;
-    
+
     if (state) {
       if (state.amount) {
         setAmount(state.amount);
@@ -109,14 +109,14 @@ const PaymentPage = () => {
     }
   };
 
-  const downloadReceipt = () => {
+  const downloadReceipt = async () => {
     if (!paymentRecord || !registrationPayload) {
       console.warn("[Receipt] Cannot download receipt: missing data");
       return;
     }
 
     console.log("[Receipt] Download receipt button clicked (PaymentPage)");
-    
+
     // Construct a registration-like object for receipt extraction
     const registrationData = {
       id: registrationId,
@@ -133,7 +133,16 @@ const PaymentPage = () => {
     );
 
     if (receiptData) {
-      generateAndDownloadReceipt(receiptData);
+      try {
+        await generateAndDownloadReceipt(receiptData);
+      } catch (error) {
+        console.error("[Receipt] Failed to generate receipt:", error);
+        toast({
+          title: "Error",
+          description: "Failed to generate receipt. Please contact support.",
+          variant: "destructive",
+        });
+      }
     } else {
       console.error("[Receipt] Failed to extract receipt data");
       toast({
@@ -197,10 +206,15 @@ const PaymentPage = () => {
             {/* Event Info */}
             {eventName && (
               <div className="mb-6 pb-6 border-b border-blue-500/30">
-                <h2 className="text-2xl font-bold text-blue-400 mb-2">{eventName}</h2>
+                <h2 className="text-2xl font-bold text-blue-400 mb-2">
+                  {eventName}
+                </h2>
                 {registrationId && (
                   <p className="text-gray-400 text-sm">
-                    Registration ID: <span className="font-mono text-blue-300">{registrationId}</span>
+                    Registration ID:{" "}
+                    <span className="font-mono text-blue-300">
+                      {registrationId}
+                    </span>
                   </p>
                 )}
               </div>
@@ -212,12 +226,16 @@ const PaymentPage = () => {
                 <div className="bg-slate-700/30 rounded-xl p-6 border border-blue-500/20">
                   <div className="flex items-center gap-3 mb-4">
                     <CreditCard className="w-6 h-6 text-blue-400" />
-                    <h3 className="text-xl font-bold text-blue-400">Payment Amount</h3>
+                    <h3 className="text-xl font-bold text-blue-400">
+                      Payment Amount
+                    </h3>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Amount to Pay:</span>
-                      <span className="text-3xl font-bold text-cyan-400">₹{amount}</span>
+                      <span className="text-3xl font-bold text-cyan-400">
+                        ₹{amount}
+                      </span>
                     </div>
                     <p className="text-sm text-gray-500 mt-4">
                       Click "Pay Now" to proceed with payment via Razorpay.
@@ -236,7 +254,10 @@ const PaymentPage = () => {
             ) : (
               <div className="space-y-6">
                 <div>
-                  <Label htmlFor="customAmount" className="text-base font-semibold mb-2 block">
+                  <Label
+                    htmlFor="customAmount"
+                    className="text-base font-semibold mb-2 block"
+                  >
                     Enter Payment Amount (₹)
                   </Label>
                   <div className="flex gap-4">
@@ -283,7 +304,9 @@ const PaymentPage = () => {
           eventName={eventName || "Event Registration"}
           registrationId={registrationId}
           amountPaid={amount}
-          paymentId={paymentRecord.payment_id || paymentRecord.razorpay_payment_id || ""}
+          paymentId={
+            paymentRecord.payment_id || paymentRecord.razorpay_payment_id || ""
+          }
           onDownloadReceipt={downloadReceipt}
         />
       )}
@@ -292,4 +315,3 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
-

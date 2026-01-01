@@ -112,7 +112,7 @@ const AutoCAD = () => {
     }
   };
 
-  const downloadReceipt = () => {
+  const downloadReceipt = async () => {
     if (!registrationData || !paymentRecord) {
       console.warn("[Receipt] Cannot download receipt: missing data");
       return;
@@ -126,7 +126,16 @@ const AutoCAD = () => {
     );
 
     if (receiptData) {
-      generateAndDownloadReceipt(receiptData);
+      try {
+        await generateAndDownloadReceipt(receiptData);
+      } catch (error) {
+        console.error("[Receipt] Failed to generate receipt:", error);
+        toast({
+          title: "Error",
+          description: "Failed to generate receipt. Please contact support.",
+          variant: "destructive",
+        });
+      }
     } else {
       console.error("[Receipt] Failed to extract receipt data");
       toast({
@@ -205,10 +214,7 @@ const AutoCAD = () => {
                         <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder="Enter your full name"
-                          {...field}
-                        />
+                        <Input placeholder="Enter your full name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

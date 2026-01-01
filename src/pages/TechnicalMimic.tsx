@@ -192,7 +192,7 @@ const TechnicalMimic = () => {
     }
   };
 
-  const downloadReceipt = () => {
+  const downloadReceipt = async () => {
     if (!registrationData || !paymentRecord) {
       console.warn("[Receipt] Cannot download receipt: missing data");
       return;
@@ -206,7 +206,16 @@ const TechnicalMimic = () => {
     );
 
     if (receiptData) {
-      generateAndDownloadReceipt(receiptData);
+      try {
+        await generateAndDownloadReceipt(receiptData);
+      } catch (error) {
+        console.error("[Receipt] Failed to generate receipt:", error);
+        toast({
+          title: "Error",
+          description: "Failed to generate receipt. Please contact support.",
+          variant: "destructive",
+        });
+      }
     } else {
       console.error("[Receipt] Failed to extract receipt data");
       toast({
@@ -574,7 +583,9 @@ const TechnicalMimic = () => {
                     className="px-8 bg-gradient-to-r from-blue-500 to-cyan-400 text-white font-semibold hover:from-blue-600 hover:to-cyan-500 shadow-lg shadow-cyan-500/50"
                     disabled={isSubmitting || paymentLoading}
                   >
-                    {isSubmitting || paymentLoading ? "Processing..." : "Pay Now"}
+                    {isSubmitting || paymentLoading
+                      ? "Processing..."
+                      : "Pay Now"}
                   </Button>
                 </div>
               </form>

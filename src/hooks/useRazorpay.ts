@@ -209,7 +209,8 @@ export function useRazorpay() {
                   console.log(
                     "[Receipt] Generating receipt after successful submission"
                   );
-                  generateAndDownloadReceipt(receiptData);
+                  // Await the async receipt generation
+                  await generateAndDownloadReceipt(receiptData);
                 } else {
                   console.warn("[Receipt] Could not extract receipt data");
                 }

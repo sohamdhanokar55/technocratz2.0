@@ -41,13 +41,16 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
             Registration Successful! ✅
           </DialogTitle>
           <DialogDescription className="text-base text-gray-600 mt-2">
-            Your payment has been received and your registration has been confirmed.
+            Your payment has been received and your registration has been
+            confirmed.
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 mt-4">
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="font-semibold text-green-800 mb-3">Registration Details</h3>
+            <h3 className="font-semibold text-green-800 mb-3">
+              Registration Details
+            </h3>
             <div className="space-y-2 text-gray-800">
               <div className="flex justify-between">
                 <span className="font-medium">Event:</span>
@@ -66,12 +69,14 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
                 </div>
               )}
               <div className="flex justify-between">
-                <span className="font-medium">Registration ID:</span>
-                <span className="font-mono text-sm">{registrationId}</span>
+                {/* <span className="font-medium">Registration ID:</span> */}
+                {/* <span className="font-mono text-sm">{registrationId}</span> */}
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">Amount Paid:</span>
-                <span className="font-semibold text-green-600">₹{amountPaid}</span>
+                <span className="font-semibold text-green-600">
+                  ₹{amountPaid}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="font-medium">Payment ID:</span>
@@ -82,13 +87,16 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
             <p className="text-sm text-gray-700">
-              <strong>📧 Confirmation Email:</strong> A confirmation email will be sent to your registered email address shortly. Please check your inbox (and spam folder).
+              <strong>📧 Confirmation Email:</strong> A confirmation email will
+              be sent to your registered email address shortly. Please check
+              your inbox (and spam folder).
             </p>
           </div>
 
           <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
             <p className="text-sm text-amber-800">
-              <strong>💡 Important:</strong> Please save this receipt for your records. You may need it for event participation.
+              <strong>💡 Important:</strong> Please save this receipt for your
+              records. You may need it for event participation.
             </p>
           </div>
         </div>
@@ -101,11 +109,7 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
             <Download className="w-4 h-4 mr-2" />
             Download Receipt (PDF)
           </Button>
-          <Button
-            onClick={onClose}
-            variant="outline"
-            className="px-6"
-          >
+          <Button onClick={onClose} variant="outline" className="px-6">
             Close
           </Button>
         </div>
@@ -115,4 +119,3 @@ const SuccessModal: React.FC<SuccessModalProps> = ({
 };
 
 export default SuccessModal;
-

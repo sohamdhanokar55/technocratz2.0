@@ -2,6 +2,7 @@
  * PDF Receipt Generator using jsPDF
  */
 import jsPDF from "jspdf";
+import { loadLogosForReceipt } from "./imageConverter";
 
 interface Participant {
   name: string;
@@ -26,7 +27,9 @@ interface ReceiptData {
 /**
  * Generates and downloads a PDF receipt
  */
-export function generateAndDownloadReceipt(data: ReceiptData): void {
+export async function generateAndDownloadReceipt(
+  data: ReceiptData
+): Promise<void> {
   console.log("[Receipt] Generating PDF receipt");
   console.log("[Receipt] Data:", data);
 
@@ -37,27 +40,46 @@ export function generateAndDownloadReceipt(data: ReceiptData): void {
   const contentWidth = pageWidth - 2 * margin;
   let yPos = margin;
 
-  // Try to add logos (top left and top right)
+  // Load and add logos (top left and top right)
   try {
-    // Agnel logo (top left) - try from public folder first
-    const agnelLogoPath = "technocratz2.0/agnel-logo-Ce5saIek.png";
-    // Technocratz logo (top right) - try from public folder first
-    const technocratzLogoPath = "technocratz2.0/technocratz-logo-BE52XFQ0.png";
+    console.log("[Receipt] Loading logos...");
+    const { agnelLogo, technocratzLogo } = await loadLogosForReceipt();
 
-    // Note: jsPDF addImage requires base64 or URL. For production, you may need to convert images to base64
-    // For now, we'll add text placeholders and the user can add actual images later
-    // If images are in public folder, they can be loaded and converted to base64
+    // Add Agnel logo (top left)
+    if (agnelLogo) {
+      try {
+        doc.addImage(agnelLogo, "PNG", margin, yPos, 30, 15);
+        console.log("[Receipt] ✅ Agnel logo added");
+      } catch (logoError) {
+        console.warn("[Receipt] Failed to add Agnel logo:", logoError);
+      }
+    } else {
+      console.warn("[Receipt] Agnel logo Base64 is null");
+    }
 
-    // Placeholder: Add text labels where logos should be
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text("Agnel Polytechnic", margin, yPos + 5);
-    doc.text("APV Council", pageWidth - margin - 30, yPos + 5);
+    // Add Technocratz logo (top right)
+    if (technocratzLogo) {
+      try {
+        doc.addImage(
+          technocratzLogo,
+          "PNG",
+          pageWidth - margin - 30,
+          yPos,
+          30,
+          15
+        );
+        console.log("[Receipt] ✅ Technocratz logo added");
+      } catch (logoError) {
+        console.warn("[Receipt] Failed to add Technocratz logo:", logoError);
+      }
+    } else {
+      console.warn("[Receipt] Technocratz logo Base64 is null");
+    }
   } catch (logoError) {
-    console.warn("[Receipt] Could not load logos:", logoError);
+    console.warn("[Receipt] Error loading logos:", logoError);
   }
 
-  yPos += 15;
+  yPos += 20;
 
   // Title
   doc.setFontSize(20);
@@ -286,13 +308,16 @@ export function extractReceiptData(
       // Add team members
       if (payload.members && Array.isArray(payload.members)) {
         payload.members.forEach((member: any) => {
-          participants.push({
-            name: member.name || "",
-            department: member.branch,
-            semester: member.semester,
-            email: member.email || "",
-            contact: member.contact || "",
-          });
+          if (member.name) {
+            // Only add if name is provided
+            participants.push({
+              name: member.name || "",
+              department: member.branch,
+              semester: member.semester,
+              email: member.email || "",
+              contact: member.contact || "",
+            });
+          }
         });
       }
     }

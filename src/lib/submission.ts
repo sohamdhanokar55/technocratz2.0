@@ -94,6 +94,24 @@ export async function createRazorpayOrder(
 
 /**
  * Builds submission payload from registration data
+ *
+ * New payload structure:
+ * {
+ *   razorpay_payment_id: string,
+ *   razorpay_order_id: string,
+ *   razorpay_signature: string,
+ *   competition: string,
+ *   institute: string,
+ *   participants: [
+ *     {
+ *       name: string,
+ *       department: string,
+ *       semester: string,
+ *       email: string,
+ *       contact: string
+ *     }
+ *   ]
+ * }
  */
 export function buildSubmissionPayload(
   registrationData: any,
@@ -105,10 +123,8 @@ export function buildSubmissionPayload(
   console.log("[Submission] Payment response:", paymentResponse);
   console.log("[Submission] Competition name:", competitionName);
 
+  // Start with payment fields
   const payload: any = {
-    // Payment status - backend will verify signature but we mark as success for flow
-    payment_status: "success",
-    // All payment fields required for backend signature verification
     razorpay_payment_id:
       paymentResponse.razorpay_payment_id || paymentResponse.payment_id,
     razorpay_order_id:
@@ -118,60 +134,90 @@ export function buildSubmissionPayload(
     competition: competitionName,
   };
 
-  // Extract form data based on event structure
+  // Extract institute and participants based on form structure
   if (registrationData.payload) {
     const formData = registrationData.payload;
+    const participants: any[] = [];
 
     // Single participant events (e.g., BlindTyping, RoboRace, AutoCAD)
     if (formData.name) {
-      payload.team_members = formData.name;
-      payload.department = formData.branch || "";
-      payload.email = formData.email || "";
-      payload.contact = formData.contact || "";
+      // Single participant event
       payload.institute = formData.institute || "";
+      participants.push({
+        name: formData.name || "",
+        department: formData.branch || "",
+        semester: formData.semester || "",
+        email: formData.email || "",
+        contact: formData.contact || "",
+      });
     }
     // Team events (e.g., HackYourWay, BridgeBuilding, TechnicalMimic)
     else if (formData.leader) {
-      payload.team_members = formData.leader.name;
-      if (formData.members && formData.members.length > 0) {
-        const memberNames = formData.members.map((m: any) => m.name).join(", ");
-        payload.team_members = `${formData.leader.name}, ${memberNames}`;
-      }
-      payload.department = formData.leader.branch || "";
-      payload.email = formData.leader.email || "";
-      payload.contact = formData.leader.contact || "";
+      // Team event
       payload.institute = formData.leader.institute || "";
+
+      // Add leader as first participant
+      participants.push({
+        name: formData.leader.name || "",
+        department: formData.leader.branch || "",
+        semester: formData.leader.semester || "",
+        email: formData.leader.email || "",
+        contact: formData.leader.contact || "",
+      });
+
+      // Add team members
+      if (formData.members && Array.isArray(formData.members)) {
+        formData.members.forEach((member: any) => {
+          if (member.name) {
+            // Only add if name is provided
+            participants.push({
+              name: member.name || "",
+              department: member.branch || "",
+              semester: member.semester || "",
+              email: member.email || "",
+              contact: member.contact || "",
+            });
+          }
+        });
+      }
     }
+
+    // Always send participants as array
+    payload.participants = participants;
   }
 
   console.log("[Submission] ✅ Payload built successfully");
   console.log("[Submission] Final payload structure:", {
-    hasPaymentStatus: !!payload.payment_status,
     hasPaymentId: !!payload.razorpay_payment_id,
     hasOrderId: !!payload.razorpay_order_id,
     hasSignature: !!payload.razorpay_signature,
     hasCompetition: !!payload.competition,
-    hasTeamMembers: !!payload.team_members,
-    hasEmail: !!payload.email,
-    hasContact: !!payload.contact,
     hasInstitute: !!payload.institute,
+    participantsCount: payload.participants?.length || 0,
   });
-  console.log("[Submission] Payload built:", JSON.stringify(payload, null, 2));
+  console.log(
+    "[Submission] Final submission payload:",
+    JSON.stringify(payload, null, 2)
+  );
   return payload;
 }
 
 /**
  * Validates submission payload before sending
+ *
+ * Required fields:
+ * - razorpay_payment_id
+ * - razorpay_order_id
+ * - razorpay_signature
+ * - competition
+ * - institute
+ * - participants (array with at least one participant containing name, department, semester, email, contact)
  */
 export function validateSubmissionPayload(payload: any): {
   valid: boolean;
   error?: string;
 } {
   console.log("[Submission] Validating payload");
-
-  if (payload.payment_status !== "success") {
-    return { valid: false, error: "Payment status must be 'success'" };
-  }
 
   if (!payload.razorpay_payment_id) {
     return { valid: false, error: "Missing razorpay_payment_id" };
@@ -192,23 +238,60 @@ export function validateSubmissionPayload(payload: any): {
     return { valid: false, error: "Missing competition name" };
   }
 
-  if (!payload.team_members) {
-    return { valid: false, error: "Missing team_members" };
-  }
-
-  if (!payload.email) {
-    return { valid: false, error: "Missing email" };
-  }
-
-  if (!payload.contact) {
-    return { valid: false, error: "Missing contact" };
-  }
-
   if (!payload.institute) {
     return { valid: false, error: "Missing institute" };
   }
 
-  console.log("[Submission] Payload validation passed");
+  if (!payload.participants || !Array.isArray(payload.participants)) {
+    return { valid: false, error: "Missing participants array" };
+  }
+
+  if (payload.participants.length === 0) {
+    return { valid: false, error: "Participants array cannot be empty" };
+  }
+
+  // Validate each participant
+  for (let i = 0; i < payload.participants.length; i++) {
+    const participant = payload.participants[i];
+
+    if (!participant.name) {
+      return { valid: false, error: `Participant ${i + 1} missing name` };
+    }
+
+    if (!participant.department) {
+      return { valid: false, error: `Participant ${i + 1} missing department` };
+    }
+
+    if (!participant.semester) {
+      return { valid: false, error: `Participant ${i + 1} missing semester` };
+    }
+
+    if (!participant.email) {
+      return { valid: false, error: `Participant ${i + 1} missing email` };
+    }
+
+    if (!participant.contact) {
+      return { valid: false, error: `Participant ${i + 1} missing contact` };
+    }
+
+    // Validate contact is 10 digits
+    if (!/^\d{10}$/.test(participant.contact)) {
+      return {
+        valid: false,
+        error: `Participant ${i + 1} contact must be exactly 10 digits`,
+      };
+    }
+
+    // Validate email format
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(participant.email)) {
+      return {
+        valid: false,
+        error: `Participant ${i + 1} email format is invalid`,
+      };
+    }
+  }
+
+  console.log("[Submission] ✅ Payload validation passed");
   return { valid: true };
 }
 
@@ -218,7 +301,7 @@ export function validateSubmissionPayload(payload: any): {
  * This function:
  * - Uses fetch() API (no require() needed)
  * - Sends payment details for backend signature verification
- * - Includes all registration data
+ * - Includes all registration data in new payload format
  * - Handles errors gracefully
  * - Provides detailed logging for debugging
  */
@@ -233,6 +316,26 @@ export async function submitRegistrationData(payload: any): Promise<{
   console.log("[Submission] Starting submission process");
   console.log("[Submission] Endpoint:", SUBMISSION_API_URL);
   console.log("[Submission] Timestamp:", new Date().toISOString());
+
+  // Log the structure of the payload for debugging
+  console.log("[Submission] Payload structure check:");
+  console.log(
+    "[Submission] - razorpay_payment_id:",
+    !!payload.razorpay_payment_id
+  );
+  console.log("[Submission] - razorpay_order_id:", !!payload.razorpay_order_id);
+  console.log(
+    "[Submission] - razorpay_signature:",
+    !!payload.razorpay_signature
+  );
+  console.log("[Submission] - competition:", payload.competition);
+  console.log("[Submission] - institute:", payload.institute);
+  console.log(
+    "[Submission] - participants count:",
+    payload.participants?.length
+  );
+
+  // Log full payload
   console.log(
     "[Submission] Request payload:",
     JSON.stringify(payload, null, 2)
@@ -243,7 +346,10 @@ export async function submitRegistrationData(payload: any): Promise<{
   if (!validation.valid) {
     console.error("[Submission] ❌ Payload validation failed");
     console.error("[Submission] Validation error:", validation.error);
-    console.error("[Submission] Payload that failed:", payload);
+    console.error(
+      "[Submission] Payload that failed:",
+      JSON.stringify(payload, null, 2)
+    );
     return {
       success: false,
       stage: "validation",
@@ -356,6 +462,10 @@ export async function submitRegistrationData(payload: any): Promise<{
     // Success!
     console.log("[Submission] ✅✅✅ SUBMISSION SUCCESSFUL ✅✅✅");
     console.log("[Submission] Backend response received");
+    console.log(
+      "[Submission] SR Number/Registration ID:",
+      responseData.srNo || responseData.sr_no
+    );
     console.log("[Submission] Completed successfully");
     console.log("[Submission] ========================================");
     return {
