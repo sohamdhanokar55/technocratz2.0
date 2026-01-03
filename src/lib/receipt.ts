@@ -17,11 +17,13 @@ interface ReceiptData {
   leaderName: string;
   email: string;
   contact: string;
+  department?: string;
+  semester?: string;
   institute: string;
   paymentId: string;
-  registrationNumber?: string;
+  registrationNumber?: string | number;
   amountPaid?: number;
-  participants?: Participant[]; // For team events
+  participants?: Participant[];
 }
 
 /**
@@ -32,6 +34,7 @@ export async function generateAndDownloadReceipt(
 ): Promise<void> {
   console.log("[Receipt] Generating PDF receipt");
   console.log("[Receipt] Data:", data);
+  console.log("[Receipt] Registration Number:", data.registrationNumber);
 
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
@@ -40,51 +43,57 @@ export async function generateAndDownloadReceipt(
   const contentWidth = pageWidth - 2 * margin;
   let yPos = margin;
 
-  // Load and add logos (top left and top right)
+  // Load and add logos with fallback text
   try {
     console.log("[Receipt] Loading logos...");
     const { agnelLogo, technocratzLogo } = await loadLogosForReceipt();
 
-    // Add Agnel logo (top left)
-    if (agnelLogo) {
+    // Add Agnel logo (top left) or text fallback
+    if (agnelLogo && agnelLogo.length > 100) {
       try {
-        doc.addImage(agnelLogo, "PNG", margin, yPos, 30, 15);
-        console.log("[Receipt] ✅ Agnel logo added");
+        console.log("[Receipt] Adding Agnel logo image");
+        doc.addImage(agnelLogo, "PNG", margin, yPos, 35, 20);
+        console.log("[Receipt] ✅ Agnel logo image added");
       } catch (logoError) {
-        console.warn("[Receipt] Failed to add Agnel logo:", logoError);
+        console.error("[Receipt] Logo image failed, using text:", logoError);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("Agnel Polytechnic", margin, yPos + 10);
       }
     } else {
-      console.warn("[Receipt] Agnel logo Base64 is null");
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text("Agnel Polytechnic", margin, yPos + 10);
     }
 
-    // Add Technocratz logo (top right)
-    if (technocratzLogo) {
+    // Add Technocratz logo (top right) or text fallback
+    if (technocratzLogo && technocratzLogo.length > 100) {
       try {
-        doc.addImage(
-          technocratzLogo,
-          "PNG",
-          pageWidth - margin - 30,
-          yPos,
-          30,
-          15
-        );
-        console.log("[Receipt] ✅ Technocratz logo added");
+        const techLogoX = pageWidth - margin - 35;
+        console.log("[Receipt] Adding Technocratz logo image");
+        doc.addImage(technocratzLogo, "PNG", techLogoX, yPos, 35, 20);
+        console.log("[Receipt] ✅ Technocratz logo image added");
       } catch (logoError) {
-        console.warn("[Receipt] Failed to add Technocratz logo:", logoError);
+        console.error("[Receipt] Logo image failed, using text:", logoError);
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "normal");
+        doc.text("APV Council", pageWidth - margin - 20, yPos + 10);
       }
     } else {
-      console.warn("[Receipt] Technocratz logo Base64 is null");
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "normal");
+      doc.text("APV Council", pageWidth - margin - 20, yPos + 10);
     }
   } catch (logoError) {
-    console.warn("[Receipt] Error loading logos:", logoError);
+    console.error("[Receipt] ⚠️ Error in logo section:", logoError);
   }
 
-  yPos += 20;
+  yPos += 30;
 
   // Title
   doc.setFontSize(20);
   doc.setFont("helvetica", "bold");
-  doc.setTextColor(59, 130, 246); // Blue color
+  doc.setTextColor(59, 130, 246);
   doc.text("Technocratz 2.0", pageWidth / 2, yPos, { align: "center" });
   yPos += 10;
 
@@ -93,143 +102,188 @@ export async function generateAndDownloadReceipt(
   doc.text("Registration Receipt", pageWidth / 2, yPos, { align: "center" });
   yPos += 15;
 
-  // Registration Number (if available)
-  if (data.registrationNumber) {
+  // Divider line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+  yPos += 10;
+
+  // Registration Number - FIXED
+  if (
+    data.registrationNumber !== undefined &&
+    data.registrationNumber !== null &&
+    String(data.registrationNumber).trim() !== ""
+  ) {
+    console.log(
+      "[Receipt] Adding registration number:",
+      data.registrationNumber
+    );
     doc.setFontSize(12);
     doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 0, 0);
     doc.text("Registration Number:", margin, yPos);
     doc.setFont("helvetica", "normal");
-    doc.text(data.registrationNumber, margin + 55, yPos);
+    doc.setTextColor(5, 150, 105);
+    doc.text(String(data.registrationNumber), margin + 58, yPos);
+    doc.setTextColor(0, 0, 0);
     yPos += 10;
+  } else {
+    console.warn("[Receipt] ⚠️ Registration number is missing or empty");
   }
 
   // Event Name
-  doc.setFontSize(14);
-  doc.setFont("helvetica", "bold");
-  doc.text("Event Name:", margin, yPos);
-  doc.setFont("helvetica", "normal");
-  const eventLines = doc.splitTextToSize(data.eventName, contentWidth - 40);
-  doc.text(eventLines, margin + 35, yPos);
-  yPos += eventLines.length * 7 + 5;
-
-  // Participants Section
-  yPos += 5;
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text("Participant Details:", margin, yPos);
-  yPos += 8;
+  doc.setTextColor(0, 0, 0);
+  doc.text("Event Name:", margin, yPos);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(59, 130, 246);
+  const eventLines = doc.splitTextToSize(data.eventName, contentWidth - 50);
+  doc.text(eventLines, margin + 40, yPos);
+  doc.setTextColor(0, 0, 0);
+  yPos += eventLines.length * 7 + 10;
 
-  // If team event with multiple participants
+  // Participants Section
+  doc.setFontSize(12);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(0, 0, 0);
+  doc.text("Participant Details:", margin, yPos);
+  yPos += 10;
+
+  // Check if multiple participants (team event)
   if (data.participants && data.participants.length > 0) {
     data.participants.forEach((participant, index) => {
-      // Check if we need a new page
-      if (yPos > pageHeight - 60) {
+      // Check for page break
+      if (yPos > pageHeight - 80) {
         doc.addPage();
         yPos = margin;
       }
 
       doc.setFontSize(11);
       doc.setFont("helvetica", "bold");
-      doc.text(`Participant ${index + 1}:`, margin, yPos);
-      yPos += 6;
+      doc.setTextColor(59, 130, 246);
+      doc.text(`Participant ${index + 1}`, margin + 3, yPos);
+      doc.setTextColor(0, 0, 0);
+      yPos += 7;
 
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
 
       // Name
-      doc.text(`  Name: ${participant.name}`, margin + 5, yPos);
-      yPos += 6;
+      if (participant.name) {
+        doc.text(`Name: ${participant.name}`, margin + 6, yPos);
+        yPos += 6;
+      }
 
       // Department
       if (participant.department) {
-        doc.text(`  Department: ${participant.department}`, margin + 5, yPos);
+        doc.text(`Department: ${participant.department}`, margin + 6, yPos);
         yPos += 6;
       }
 
       // Semester
       if (participant.semester) {
-        doc.text(`  Semester: ${participant.semester}`, margin + 5, yPos);
+        doc.text(`Semester: ${participant.semester}`, margin + 6, yPos);
         yPos += 6;
       }
 
       // Email
       if (participant.email) {
-        doc.text(`  Email: ${participant.email}`, margin + 5, yPos);
+        doc.text(`Email: ${participant.email}`, margin + 6, yPos);
         yPos += 6;
       }
 
       // Contact
       if (participant.contact) {
-        doc.text(`  Contact: ${participant.contact}`, margin + 5, yPos);
+        doc.text(`Contact: ${participant.contact}`, margin + 6, yPos);
         yPos += 6;
       }
 
-      yPos += 3; // Space between participants
+      yPos += 4;
     });
   } else {
-    // Single participant (leader)
+    // Single participant
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
 
-    doc.text(`  Name: ${data.leaderName}`, margin + 5, yPos);
-    yPos += 6;
+    if (data.leaderName) {
+      doc.text(`Name: ${data.leaderName}`, margin + 3, yPos);
+      yPos += 6;
+    }
 
-    // Email
-    doc.text(`  Email: ${data.email}`, margin + 5, yPos);
-    yPos += 6;
+    if (data.department) {
+      doc.text(`Department: ${data.department}`, margin + 3, yPos);
+      yPos += 6;
+    }
 
-    // Contact
-    doc.text(`  Contact: ${data.contact}`, margin + 5, yPos);
-    yPos += 6;
+    if (data.semester) {
+      doc.text(`Semester: ${data.semester}`, margin + 3, yPos);
+      yPos += 6;
+    }
 
-    // Institute
-    if (data.institute) {
-      const instituteLines = doc.splitTextToSize(
-        `  Institute: ${data.institute}`,
-        contentWidth - 10
-      );
-      doc.text(instituteLines, margin + 5, yPos);
-      yPos += instituteLines.length * 6;
+    if (data.email) {
+      doc.text(`Email: ${data.email}`, margin + 3, yPos);
+      yPos += 6;
+    }
+
+    if (data.contact) {
+      doc.text(`Contact: ${data.contact}`, margin + 3, yPos);
+      yPos += 6;
     }
   }
 
-  // Payment ID
-  yPos += 5;
-  doc.setFontSize(11);
-  doc.setFont("helvetica", "bold");
-  doc.text("Payment ID:", margin, yPos);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(10);
-  doc.text(data.paymentId, margin + 30, yPos);
-  yPos += 10;
-
-  // Amount Paid
-  if (data.amountPaid) {
-    yPos += 5;
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(5, 150, 105); // Green color
-    doc.text(`Amount Paid: ₹${data.amountPaid}`, margin, yPos);
+  // Institute
+  if (data.institute) {
+    yPos += 3;
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(0, 0, 0);
+    doc.text(`Institute: ${data.institute}`, margin + 3, yPos);
     yPos += 10;
   }
 
-  // Footer line
-  yPos += 10;
+  // Divider
   doc.setDrawColor(200, 200, 200);
   doc.line(margin, yPos, pageWidth - margin, yPos);
   yPos += 10;
 
-  // Footer text
+  // Payment ID
+  doc.setFontSize(11);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(0, 0, 0);
+  doc.text("Payment ID:", margin, yPos);
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(192, 21, 47);
   doc.setFontSize(10);
+  const paymentIdLines = doc.splitTextToSize(data.paymentId, contentWidth - 40);
+  doc.text(paymentIdLines, margin + 35, yPos);
+  doc.setTextColor(0, 0, 0);
+  yPos += paymentIdLines.length * 6 + 5;
+
+  // Amount Paid
+  if (data.amountPaid) {
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(5, 150, 105);
+    doc.text(`Amount Paid: Rs. ${data.amountPaid}`, margin, yPos);
+    doc.setTextColor(0, 0, 0);
+    yPos += 12;
+  }
+
+  // Footer line
+  doc.setDrawColor(200, 200, 200);
+  doc.line(margin, yPos, pageWidth - margin, yPos);
+  yPos += 8;
+
+  // Footer text
+  doc.setFontSize(9);
   doc.setFont("helvetica", "italic");
   doc.setTextColor(128, 128, 128);
   doc.text(
     "Thank you for registering for Technocratz 2.0",
     pageWidth / 2,
     yPos,
-    {
-      align: "center",
-    }
+    { align: "center" }
   );
   yPos += 5;
   doc.text(
@@ -243,12 +297,13 @@ export async function generateAndDownloadReceipt(
   const sanitizedName = data.leaderName
     .replace(/[^a-z0-9]/gi, "_")
     .toLowerCase();
-  const filename = `${sanitizedName}_Technocratz2.0.pdf`;
+  const timestamp = Date.now();
+  const filename = `Technocratz_${sanitizedName}_${timestamp}.pdf`;
 
   // Save PDF
   console.log("[Receipt] Saving PDF as:", filename);
   doc.save(filename);
-  console.log("[Receipt] PDF receipt downloaded successfully");
+  console.log("[Receipt] ✅ PDF receipt downloaded successfully");
 }
 
 /**
@@ -270,56 +325,54 @@ export function extractReceiptData(
 
   const paymentId =
     paymentRecord.razorpay_payment_id || paymentRecord.payment_id || "";
-  const registrationNumber =
+
+  // Extract registration number - IMPROVED
+  let registrationNumber: string | number | null =
     paymentRecord.registrationNumber ||
     paymentRecord.registration_number ||
     paymentRecord.srNo ||
     paymentRecord.sr_no ||
     paymentRecord.serial_number ||
-    "";
+    null;
+
+  console.log("[Receipt] Extracted registration number:", registrationNumber);
 
   // Extract participants
   const participants: Participant[] = [];
+  let mainDepartment = "";
+  let mainSemester = "";
 
   if (registrationData.payload) {
     const payload = registrationData.payload;
 
-    // Single participant events
-    if (payload.name) {
+    // Check for participants array (new format - team events)
+    // ✅ NEW FORMAT SUPPORT
+    if (Array.isArray(payload.participants)) {
+      payload.participants.forEach((p: any) => {
+        if (p.name) {
+          participants.push({
+            name: p.name,
+            department: p.department,
+            semester: p.semester,
+            email: p.email,
+            contact: p.contact,
+          });
+        }
+      });
+    }
+
+    // Single participant event (old format)
+    else if (payload.name) {
+      console.log("[Receipt] Found single participant");
+      mainDepartment = payload.department || payload.branch || "";
+      mainSemester = payload.semester || "";
       participants.push({
         name: payload.name,
-        department: payload.branch,
-        semester: payload.semester,
+        department: mainDepartment,
+        semester: mainSemester,
         email: payload.email || "",
         contact: payload.contact || "",
       });
-    }
-    // Team events
-    else if (payload.leader) {
-      // Add leader as first participant
-      participants.push({
-        name: payload.leader.name || "",
-        department: payload.leader.branch,
-        semester: payload.leader.semester,
-        email: payload.leader.email || "",
-        contact: payload.leader.contact || "",
-      });
-
-      // Add team members
-      if (payload.members && Array.isArray(payload.members)) {
-        payload.members.forEach((member: any) => {
-          if (member.name) {
-            // Only add if name is provided
-            participants.push({
-              name: member.name || "",
-              department: member.branch,
-              semester: member.semester,
-              email: member.email || "",
-              contact: member.contact || "",
-            });
-          }
-        });
-      }
     }
   }
 
@@ -328,7 +381,7 @@ export function extractReceiptData(
     return null;
   }
 
-  // Use first participant (leader) for main fields
+  // Use first participant for leader fields
   const leader = participants[0];
 
   return {
@@ -336,13 +389,12 @@ export function extractReceiptData(
     leaderName: leader.name,
     email: leader.email || "",
     contact: leader.contact || "",
-    institute:
-      registrationData.payload?.leader?.institute ||
-      registrationData.payload?.institute ||
-      "",
+    department: leader.department || mainDepartment,
+    semester: leader.semester || mainSemester,
+    institute: registrationData.payload?.institute || "",
     paymentId,
-    registrationNumber,
+    registrationNumber, // Can be string or number
     amountPaid: registrationData.amountPaid,
-    participants: participants.length > 1 ? participants : undefined, // Only include if multiple
+    participants: participants.length > 1 ? participants : undefined,
   };
 }

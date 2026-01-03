@@ -169,6 +169,7 @@ const Index = () => {
     {
       title: "TECHNICAL MIMIC",
       icon: Target,
+      label: "Only for Agnel Polytechnic Students",
       description:
         "A competition testing your technical knowledge and mimicry skills.",
       rules: [
@@ -187,6 +188,7 @@ const Index = () => {
     {
       title: "AUTOCAD COMPETITION",
       icon: Monitor,
+      label: "Open to all Polytechnic",
       description:
         "Showcase your design skills and precision in computer-aided design challenges.",
       rules: [
@@ -213,6 +215,7 @@ const Index = () => {
     {
       title: "BLIND TYPING",
       icon: Keyboard,
+      label: "Open to all Polytechnic",
       description:
         "Speed and accuracy challenge to test your typing skills without looking at the keyboard.",
       rules: [
@@ -229,6 +232,7 @@ const Index = () => {
     {
       title: "ROBONOVA – ROBO RACE",
       icon: Code,
+      label: "Open to all Polytechnic",
       description:
         "Build and race your robots in this exciting robotics competition.",
       rules: [
@@ -259,6 +263,7 @@ const Index = () => {
     {
       title: "HACK YOUR WAY",
       icon: Code,
+      label: "Open to all Polytechnic",
       description:
         "Code without syntax highlighting or auto-completion. Pure programming skills test.",
       rules: [
@@ -276,6 +281,7 @@ const Index = () => {
     {
       title: "BRIDGE BUILDING",
       icon: CircuitBoard,
+      label: "Open to all Polytechnic",
       description:
         "Design and simulate electronic circuits to solve real-world engineering problems.",
       rules: [
@@ -320,24 +326,24 @@ const Index = () => {
         animate={{ y: 0 }}
         className="fixed top-0 w-full bg-gradient-to-r from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-lg border-b border-blue-500/30 z-50 shadow-lg"
       >
-        <div className="container mx-auto px-6 py-6">
-          <div className="flex justify-between items-center">
+        <div className="container mx-auto px-2 sm:px-6 py-3 sm:py-6">
+          <div className="flex justify-between items-center gap-2 sm:gap-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="flex items-center space-x-6 text-2xl md:text-3xl font-bold"
+              className="flex items-center gap-2 sm:gap-6 text-xs sm:text-2xl md:text-3xl font-bold min-w-0"
             >
               <img
                 src={agnelLogo}
                 alt="Agnel Polytechnic Logo"
-                className="w-20 h-20 object-contain hover:scale-110 transition-transform duration-300"
+                className="w-12 sm:w-20 h-12 sm:h-20 object-contain hover:scale-110 transition-transform duration-300 flex-shrink-0"
               />
               <img
                 src={technocratzLogo}
                 alt="TechnoCratz Logo"
-                className="w-24 h-24 object-contain hover:scale-110 transition-transform duration-300"
+                className="w-14 sm:w-24 h-14 sm:h-24 object-contain hover:scale-110 transition-transform duration-300 flex-shrink-0"
               />
-              <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent truncate">
                 APV TECHNOCRATZ 2.0
               </span>
             </motion.div>
@@ -412,7 +418,7 @@ const Index = () => {
                   initial="hidden"
                   animate="visible"
                   transition={{ delayChildren: 0.25 }}
-                  className="text-4xl sm:text-5xl lg:text-8xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg px-4"
+                  className="text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-extrabold leading-tight tracking-tight bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg px-2 sm:px-4 whitespace-normal"
                 >
                   {"TECHNOCRATZ 2.0".split("").map((char, i) => (
                     <motion.span
@@ -449,7 +455,7 @@ const Index = () => {
                   delay: 0.5,
                   staggerChildren: 0.1,
                 }}
-                className="space-y-4 text-xl text-gray-300 leading-relaxed mb-10 max-w-3xl mx-auto"
+                className="space-y-2 sm:space-y-4 text-base sm:text-lg md:text-xl text-gray-300 leading-relaxed mb-8 sm:mb-10 max-w-3xl mx-auto px-2 sm:px-4"
               >
                 <p>
                   Join{" "}
@@ -474,24 +480,24 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="grid grid-cols-3 gap-6 mb-10 max-w-2xl mx-auto"
+                className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6 mb-8 sm:mb-10 max-w-2xl mx-auto px-2"
               >
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-6 rounded-xl hover:bg-blue-500/10 transition-all duration-300 border border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 shadow-lg shadow-blue-500/20"
+                  className="text-center p-3 sm:p-6 rounded-xl hover:bg-blue-500/10 transition-all duration-300 border border-blue-500/30 bg-gradient-to-br from-blue-500/5 to-cyan-500/5 shadow-lg shadow-blue-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.8 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2"
+                    className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-1 sm:mb-2"
                   >
                     6
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
+                  <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Competitions
                   </div>
                 </motion.div>
@@ -500,17 +506,17 @@ const Index = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.8 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-6 rounded-xl hover:bg-purple-500/10 transition-all duration-300 border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 shadow-lg shadow-purple-500/20"
+                  className="text-center p-3 sm:p-6 rounded-xl hover:bg-purple-500/10 transition-all duration-300 border border-purple-500/30 bg-gradient-to-br from-purple-500/5 to-pink-500/5 shadow-lg shadow-purple-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.9 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2"
+                    className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-1 sm:mb-2"
                   >
                     500+
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
+                  <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Participants
                   </div>
                 </motion.div>
@@ -519,17 +525,17 @@ const Index = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.9 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="text-center p-6 rounded-xl hover:bg-green-500/10 transition-all duration-300 border border-green-500/30 bg-gradient-to-br from-green-500/5 to-emerald-500/5 shadow-lg shadow-green-500/20"
+                  className="text-center p-3 sm:p-6 rounded-xl hover:bg-green-500/10 transition-all duration-300 border border-green-500/30 bg-gradient-to-br from-green-500/5 to-emerald-500/5 shadow-lg shadow-green-500/20"
                 >
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 1.0 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-2"
+                    className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent mb-1 sm:mb-2"
                   >
                     ₹50K+
                   </motion.div>
-                  <div className="text-sm text-gray-400 uppercase tracking-wider font-semibold">
+                  <div className="text-xs sm:text-sm text-gray-400 uppercase tracking-wider font-semibold">
                     Prizes
                   </div>
                 </motion.div>
@@ -651,10 +657,10 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent mb-6 px-2">
               APV TECHNOCRATZ 2.0
             </h1>
-            <p className="text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-gray-300 max-w-3xl mx-auto leading-relaxed px-2">
               APV TECHNOCRATZ 2.0 is the premier technical event organized by
               Agnel Polytechnic in association with Institution's Innovation
               Council (IIC). Experience cutting-edge competitions, innovative
@@ -745,7 +751,7 @@ const Index = () => {
             </motion.div>
 
             <motion.h2
-              className="text-5xl md:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 bg-gradient-to-r from-blue-400 via-cyan-300 to-blue-300 bg-clip-text text-transparent drop-shadow-lg px-2"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -821,9 +827,15 @@ const Index = () => {
                       <competition.icon className="w-12 h-12 text-cyan-400 group-hover:text-blue-300 transition-colors duration-300" />
                     </motion.div>
 
-                    <h3 className="text-xl font-bold mb-3 text-white group-hover:text-cyan-300 transition-colors duration-300">
+                    <h3 className="text-xl font-bold mb-2 text-white group-hover:text-cyan-300 transition-colors duration-300">
                       {competition.title}
                     </h3>
+
+                    {competition.label && (
+                      <div className="mb-3 inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-amber-500/30 to-orange-500/30 border border-amber-400/60 text-amber-300">
+                        {competition.label}
+                      </div>
+                    )}
 
                     <p className="text-sm text-gray-300 mb-4 leading-relaxed">
                       {competition.description}
@@ -1682,7 +1694,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="technocratz2.0/team/1.png"
+                      src="/technocratz2.0/team/1.png"
                       alt="Swara Hande"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1732,7 +1744,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="technocratz2.0/team/2.png"
+                      src="/technocratz2.0/team/2.png"
                       alt="Arush Wavhal"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1782,7 +1794,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="technocratz2.0/team/3.png"
+                      src="/technocratz2.0/team/3.png"
                       alt="Olivia Ojas"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
@@ -1832,7 +1844,7 @@ const Index = () => {
                 <CardContent className="p-0">
                   <div className="relative h-64 overflow-hidden bg-gradient-to-br from-primary/20 to-secondary/20">
                     <img
-                      src="technocratz2.0/team/4.png"
+                      src="/technocratz2.0/team/4.png"
                       alt="Gauri Dhuri"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
