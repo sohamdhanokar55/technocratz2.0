@@ -1,0 +1,221 @@
+<?php
+/**
+ * Razorpay Payment Verification Endpoint
+ * 
+ * SECURITY NOTE: This file contains sensitive operations.
+ * - Signature verification MUST happen on backend (never in frontend)
+ * - Use hash_hmac() for secure signature verification
+ * - Store Razorpay secret key securely (environment variables, not in code)
+ * 
+ * USAGE:
+ * 1. Copy this file to verify_payment.php (or your preferred name)
+ * 2. Set RAZORPAY_SECRET_KEY in your environment or config
+ * 3. Ensure this endpoint accepts POST requests
+ * 4. Frontend should send: razorpay_payment_id, razorpay_order_id, razorpay_signature
+ */
+
+// Set headers for JSON response
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *'); // Adjust for production security
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type');
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Only accept POST requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Method not allowed. Use POST.'
+    ]);
+    exit();
+}
+
+// Get Razorpay secret key from environment (RECOMMENDED)
+// Or from secure config file (never commit secret keys to git!)
+$razorpaySecretKey = getenv('RAZORPAY_SECRET_KEY');
+if (empty($razorpaySecretKey)) {
+    // Fallback: Load from config file (if needed)
+    // $razorpaySecretKey = require_once('config.php');
+    
+    // For testing, you can hardcode (REMOVE IN PRODUCTION!)
+    // $razorpaySecretKey = 'your_razorpay_secret_key_here';
+    
+    error_log('ERROR: RAZORPAY_SECRET_KEY not found in environment');
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Server configuration error'
+    ]);
+    exit();
+}
+
+// Get JSON input
+$jsonInput = file_get_contents('php://input');
+$data = json_decode($jsonInput, true);
+
+// Validate input
+if (!$data) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Invalid JSON input'
+    ]);
+    exit();
+}
+
+// Extract payment details
+$razorpayPaymentId = $data['razorpay_payment_id'] ?? null;
+$razorpayOrderId = $data['razorpay_order_id'] ?? null;
+$razorpaySignature = $data['razorpay_signature'] ?? null;
+
+// Validate required fields
+if (empty($razorpayPaymentId) || empty($razorpayOrderId) || empty($razorpaySignature)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Missing required fields: razorpay_payment_id, razorpay_order_id, razorpay_signature'
+    ]);
+    exit();
+}
+
+/**
+ * Verify Razorpay Payment Signature
+ * 
+ * Razorpay signature is generated using:
+ * hash_hmac('sha256', $orderId . '|' . $paymentId, $secretKey)
+ * 
+ * We need to recreate this signature and compare it with the provided signature.
+ */
+function verifyRazorpaySignature($orderId, $paymentId, $signature, $secretKey) {
+    // Create the signature string (order_id|payment_id)
+    $signatureString = $orderId . '|' . $paymentId;
+    
+    // Generate expected signature using HMAC SHA256
+    $expectedSignature = hash_hmac('sha256', $signatureString, $secretKey);
+    
+    // Compare signatures using hash_equals() for timing-safe comparison
+    // This prevents timing attacks
+    $isValid = hash_equals($expectedSignature, $signature);
+    
+    return $isValid;
+}
+
+// Verify the signature
+$isSignatureValid = verifyRazorpaySignature(
+    $razorpayOrderId,
+    $razorpayPaymentId,
+    $razorpaySignature,
+    $razorpaySecretKey
+);
+
+if (!$isSignatureValid) {
+    // Signature verification failed - payment is NOT verified
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Payment signature verification failed. Payment not verified.',
+        'stage' => 'signature_verification'
+    ]);
+    exit();
+}
+
+// Signature is valid - payment is verified!
+// Now you can safely:
+// 1. Save registration data to database
+// 2. Save to Google Sheets / Excel
+// 3. Send confirmation emails
+// 4. Update order status
+
+// Extract registration data from payload
+$competition = $data['competition'] ?? null;
+$teamMembers = $data['team_members'] ?? null;
+$department = $data['department'] ?? '';
+$email = $data['email'] ?? null;
+$contact = $data['contact'] ?? null;
+$institute = $data['institute'] ?? null;
+
+// Validate registration data
+if (empty($competition) || empty($teamMembers) || empty($email) || empty($contact) || empty($institute)) {
+    http_response_code(400);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Missing required registration fields',
+        'stage' => 'data_validation'
+    ]);
+    exit();
+}
+
+// TODO: Save to database/Google Sheets/Excel
+// Example database save (pseudo-code):
+/*
+try {
+    $pdo = new PDO($dsn, $user, $password);
+    $stmt = $pdo->prepare("
+        INSERT INTO registrations 
+        (payment_id, order_id, competition, team_members, department, email, contact, institute, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+    ");
+    $stmt->execute([
+        $razorpayPaymentId,
+        $razorpayOrderId,
+        $competition,
+        $teamMembers,
+        $department,
+        $email,
+        $contact,
+        $institute
+    ]);
+} catch (PDOException $e) {
+    error_log('Database error: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'error' => 'Failed to save registration',
+        'stage' => 'database_save'
+    ]);
+    exit();
+}
+*/
+
+// TODO: Save to Google Sheets (if using Google Sheets API)
+// Example Google Sheets save (pseudo-code):
+/*
+$spreadsheetId = 'your_spreadsheet_id';
+$range = 'Sheet1!A1';
+$values = [[
+    date('Y-m-d H:i:s'),
+    $razorpayPaymentId,
+    $razorpayOrderId,
+    $competition,
+    $teamMembers,
+    $department,
+    $email,
+    $contact,
+    $institute
+]];
+
+// Use Google Sheets API to append row
+// (Implementation depends on your Google Sheets setup)
+*/
+
+// Return success response
+http_response_code(200);
+echo json_encode([
+    'success' => true,
+    'message' => 'Payment verified and registration saved successfully',
+    'payment_id' => $razorpayPaymentId,
+    'order_id' => $razorpayOrderId,
+    'competition' => $competition
+]);
+
+// Optional: Send confirmation email
+// mail($email, 'Registration Confirmed', 'Your registration for ' . $competition . ' is confirmed...');
+
+?>
+
